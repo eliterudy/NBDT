@@ -1,6 +1,6 @@
 var passport = require("passport");
 var LocalStrategy = require("passport-local").Strategy;
-var User = require("../models/users");
+var User = require("../models/users/users");
 var JtwStrategy = require("passport-jwt").Strategy;
 var ExtractJwt = require("passport-jwt").ExtractJwt;
 var jwt = require("jsonwebtoken");

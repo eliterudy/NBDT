@@ -1,14 +1,10 @@
 var express = require("express");
 const bodyParser = require("body-parser");
 var passport = require("passport");
-var path = require("path");
-const Article = require("../models/articles");
-const User = require("../models/users");
-const authenticate = require("../config/authenticate");
-const cors = require("../config/cors");
-const UserPropUpdate = require("../components/UserPropUpdate");
-const DataTrimmer = require("../components/DataTrimmer");
-const UploadFile = require("../components/UploadFile");
+const User = require("../../models/users/users");
+const authenticate = require("../../config/authenticate");
+const cors = require("../../config/cors");
+const DataTrimmer = require("../../utils/DataTrimmer");
 
 var userRouter = express.Router();
 userRouter.use(bodyParser.json());
@@ -49,13 +45,17 @@ userRouter.get(
       .then(
         (users) => {
           if (users) {
-            res.statusCode = 200;
-            res.setHeader("Content-Type", "application/json");
-            res.json({
-              results: DataTrimmer.trimAuthorList(users),
-
-              count,
-            });
+            User.count(filters).then(
+              (count) => {
+                res.statusCode = 200;
+                res.setHeader("Content-Type", "application/json");
+                res.json({
+                  results: users,
+                  count,
+                });
+              },
+              (err) => next(err)
+            );
           }
         },
         (err) => next(err)
@@ -64,8 +64,7 @@ userRouter.get(
   }
 );
 
-userRouter.post("/signup", cors.cors, async (req, res, next) => {
-  // register is a passport method
+userRouter.post("/signup", async (req, res, next) => {
   User.register(
     new User({
       username: req.body.username,
