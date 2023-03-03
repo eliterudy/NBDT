@@ -7,16 +7,23 @@ var config = require("./config/config");
 var mongoose = require("mongoose");
 var indexRouter = require("./routes/index");
 const { foodCrawlerRouter } = require("./routes/food/index");
+const userRouter = require("./routes/user/userRouter");
 
 var mongoUrl = config.DB_CONNECT;
 var connect = mongoose.connect(mongoUrl, {
-  strictQuery: true,
+  // strictQuery: true,
   useUnifiedTopology: true,
   useNewUrlParser: true,
   autoIndex: true, //make this also true
 });
 
-connect.then((db) => {}).catch((err) => {});
+connect
+  .then((db) => {
+    console.log("DB CONNECTED");
+  })
+  .catch((err) => {
+    console.log(err);
+  });
 var app = express();
 
 // middleware to redirect to secureServer
@@ -37,7 +44,7 @@ app.use(passport.initialize());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/", indexRouter);
-// app.use("/users", usersRouter);
+app.use("/users", userRouter);
 // app.use("/food/restaurants", restaurantRouter);
 app.use("/food/crawlers", foodCrawlerRouter);
 
