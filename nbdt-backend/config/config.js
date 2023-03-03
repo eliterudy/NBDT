@@ -9,7 +9,6 @@ if (process.env.NODE_ENV) {
   dotenv.config();
 }
 
-console.log(process.env.ENV_KEY);
 module.exports = {
   NODE_ENV: process.env.NODE_ENV || "development",
   DEFAULT_CATEGORY_TYPE: process.env.DEFAULT_CATEGORY_TYPE || "localhost",
