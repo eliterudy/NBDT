@@ -3,16 +3,20 @@ var express = require("express");
 var path = require("path");
 var logger = require("morgan");
 var passport = require("passport");
-var schedule = require("node-schedule");
-
-var authenticate = require("./config/authenticate");
 var config = require("./config/config");
 var mongoose = require("mongoose");
 var indexRouter = require("./routes/index");
-var usersRouter = require("./routes/userRouter");
-var articleRouter = require("./routes/articleRouter");
-var badgeRouter = require("./routes/badgeRouter");
+const { foodCrawlerRouter } = require("./routes/food/index");
 
+var mongoUrl = config.DB_CONNECT;
+var connect = mongoose.connect(mongoUrl, {
+  strictQuery: true,
+  useUnifiedTopology: true,
+  useNewUrlParser: true,
+  autoIndex: true, //make this also true
+});
+
+connect.then((db) => {}).catch((err) => {});
 var app = express();
 
 // middleware to redirect to secureServer
@@ -33,7 +37,9 @@ app.use(passport.initialize());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/", indexRouter);
-app.use("/users", usersRouter);
+// app.use("/users", usersRouter);
+// app.use("/food/restaurants", restaurantRouter);
+app.use("/food/crawlers", foodCrawlerRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
