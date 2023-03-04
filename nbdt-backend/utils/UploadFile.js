@@ -1,5 +1,4 @@
 var path = require("path");
-var Resize = require("./Resize");
 var multer = require("multer");
 const { v4 } = require("uuid");
 
@@ -8,21 +7,21 @@ var config = require("../config/config");
 var imagekit = new ImageKit({
   publicKey: `${config.IMAGEKIT_PUBLIC_KEY}`,
   privateKey: `${config.IMAGEKIT_PRIVATE_KEY}`,
-  urlEndpoint: `https://ik.imagekit.io/${config.IMAGEKIT_ID}/nbdt/`,
+  urlEndpoint: `https://ik.imagekit.io/${config.IMAGEKIT_ID}/`,
 });
 
 const uploadPhoto = async (
   file,
   category_type = env.DEFAULT_CATEGORY_TYPE,
   folder_name = env.DEFAULT_FOLDER_NAME,
-  width = 400,
-  height = 400
+  width = 1080,
+  height = 1080
 ) => {
   var imageKitResponse = await imagekit
     .upload({
       file: file.buffer,
-      fileName: `${v4()}.jpg`,
-      folder: `nbdt/${category_type}/${folder_name}`,
+      fileName: v4(),
+      folder: `${config.IMAGEKIT_FOLDER}/${category_type}/${folder_name}`,
       /* ------- to transform images to specific aspects ||| DONT DELETE  -------- */
       // width: width,
       // height: height,
@@ -41,7 +40,7 @@ const uploadPhoto = async (
       });
       return { success: true, url };
     })
-    .catch((error) => {
+    .catch((e) => {
       return { success: false, url: "" };
     });
   return imageKitResponse;
