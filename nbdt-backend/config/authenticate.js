@@ -1,6 +1,6 @@
 var passport = require("passport");
 var LocalStrategy = require("passport-local").Strategy;
-var User = require("../models/users/users");
+var User = require("../models/user-models/users");
 var JtwStrategy = require("passport-jwt").Strategy;
 var ExtractJwt = require("passport-jwt").ExtractJwt;
 var jwt = require("jsonwebtoken");
@@ -37,7 +37,7 @@ exports.jwtPassport = passport.use(
 exports.verifyUser = passport.authenticate("jwt", { session: false });
 
 exports.verifyAdmin = (req, res, next) => {
-  if (req.user.admin) return next();
+  if (req.user.is_admin) return next();
 
   res.statusCode = 403;
   res.setHeader("Content-Type", "application/json");
