@@ -38,7 +38,15 @@ const uploadPhoto = async (
         //   },
         // ],
       });
-      return { success: true, url };
+      return {
+        success: true,
+        result: {
+          image_url: url,
+          file_id: response.fileId,
+          file_path: response.filePath,
+          name: response.name,
+        },
+      };
     })
     .catch((e) => {
       return { success: false, url: "" };
@@ -53,4 +61,8 @@ const multerConfig = () =>
     },
   });
 
-module.exports = { uploadPhoto, multerConfig };
+const deletePhoto = async (id) => {
+  imagekit.deleteFile(id, (error, result) => {});
+};
+
+module.exports = { uploadPhoto, deletePhoto, multerConfig };
