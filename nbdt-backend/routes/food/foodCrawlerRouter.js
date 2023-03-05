@@ -68,20 +68,6 @@ foodCrawlerRouter
                   res.json(crawler);
                 },
                 (err) => {
-                  if (err.code == 11000) {
-                    Asset.findById(asset._id.toString()).then((asset) => {
-                      if (asset) {
-                        AssetStorageHandler.deletePhoto(asset.file_id);
-                        Asset.findByIdAndRemove(asset._id);
-                      }
-                    });
-                    res.statusCode = 400;
-                    res.setHeader("Content-Type", "application/json");
-                    return res.json({
-                      error:
-                        "There is another crawler with the same name. We cannot have duplicate ",
-                    });
-                  }
                   next(err);
                 }
               )
@@ -125,7 +111,155 @@ foodCrawlerRouter
         .then((resp) => {
           res.statusCode = 200;
           res.setHeader("Content-Type", "application/json");
-          res.json({ success: true, deleted: resp });
+          res.json(resp);
+        })
+        .catch((err) => next(err));
+    }
+  );
+
+foodCrawlerRouter
+  .route("/id/:food_crawler_id")
+  .options(cors.corsWithOptions, (req, res) => {
+    res.sendStatus(200);
+  })
+  .get(cors.cors, (req, res, next) => {
+    FoodCrawler.findById(req.params.food_crawler_id)
+      .then((food_crawler) => {
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.json(food_crawler);
+      })
+      .catch((err) => next(err));
+  })
+  .post(cors.corsWithOptions, (req, res, next) => {
+    res.statusCode = 403;
+    res.end(
+      "POST operation not supported on /food/crawlers/id/" +
+        req.params.food_crawler_id
+    );
+  })
+  .put(
+    cors.corsWithOptions,
+    authenticate.verifyUser,
+    authenticate.verifyAdmin,
+    AssetStorageHandler.multerConfig().single("image"),
+    async (req, res, next) => {
+      FoodCrawler.findById(req.params.food_crawler_id)
+        .then(async (food_crawler) => {
+          if (!food_crawler) {
+            res.statusCode = 403;
+            res.setHeader("Content-Type", "application/json");
+            return res.json({
+              error: "This food crawler does not exist in the system.",
+            });
+          } else {
+            if (req.file) {
+              var upload_response = await AssetStorageHandler.uploadPhoto(
+                req.file,
+                "food",
+                "food-crawlers",
+                720,
+                720
+              );
+
+              if (!upload_response.success) {
+                res.statusCode = 500;
+                res.setHeader("Content-Type", "application/json");
+                res.json({
+                  error:
+                    "Image could not be saved/uploaded. Kindly check the image and resend this request.",
+                });
+                return;
+              } else {
+                await Asset.findOne({
+                  image_url: food_crawler.image_url.toString(),
+                }).then(async (asset) => {
+                  if (!asset) {
+                    res.statusCode = 500;
+                    res.setHeader("Content-Type", "application/json");
+                    res.json({
+                      error: "Could not upload the image to server.",
+                    });
+                    return;
+                  }
+                  await AssetStorageHandler.deletePhoto(asset.file_id);
+                  await Asset.findByIdAndRemove(asset._id);
+
+                  await Asset.create(upload_response.result)
+                    .then((new_asset) => {
+                      if (!new_asset) {
+                        res.setHeader("Content-Type", "application/json");
+                        res.json({
+                          error: "Failed to replace new image",
+                        });
+                        return;
+                      } else {
+                        req.body = {
+                          ...req.body,
+                          image_url: upload_response.result.image_url,
+                        };
+                      }
+                      delete req.body.image;
+                    })
+                    .catch((err) => next(err));
+                });
+              }
+            }
+
+            FoodCrawler.findByIdAndUpdate(
+              req.params.food_crawler_id,
+              {
+                $set: req.body,
+              },
+              { new: true }
+            ).then((food_crawler_new) => {
+              if (!food_crawler_new) {
+                res.statusCode = 404;
+                res.setHeader("Content-Type", "application/json");
+                return res.json({
+                  error: "This food crawler does not exist in the system.",
+                });
+              } else {
+                res.statusCode = 200;
+                res.setHeader("Content-Type", "application/json");
+                return res.json(food_crawler_new);
+              }
+            });
+          }
+        })
+        .catch((err) => next(err));
+    }
+  )
+  .delete(
+    cors.corsWithOptions,
+    authenticate.verifyUser,
+    authenticate.verifyAdmin,
+    async (req, res, next) => {
+      FoodCrawler.findById(req.params.food_crawler_id)
+        .then(async (food_crawler) => {
+          if (!food_crawler) {
+            res.statusCode = 403;
+            res.setHeader("Content-Type", "application/json");
+            return res.json({
+              error: "This food crawler does not exist in the system.",
+            });
+          }
+          await Asset.findOne({
+            image_url: food_crawler.image_url.toString(),
+          }).then((asset) => {
+            if (asset) {
+              AssetStorageHandler.deletePhoto(asset.file_id);
+              Asset.findByIdAndRemove(asset._id);
+            }
+          });
+
+          FoodCrawler.findByIdAndRemove(food_crawler._id)
+            .then((resp) => {
+              res.statusCode = 200;
+              res.setHeader("Content-Type", "application/json");
+              res.json(resp);
+            })
+            .catch((err) => next(err));
         })
         .catch((err) => next(err));
     }
