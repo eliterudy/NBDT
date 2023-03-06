@@ -1,7 +1,9 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const authenticate = require("../../config/authenticate");
 const AssetStorageHandler = require("../../utils/AssetStorageHandler");
 const Asset = require("../../models/asset-models/assets");
+const cors = require("../../config/cors");
 const {
   deleteAssetFromDB,
   createAssetInDB,
