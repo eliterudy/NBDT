@@ -6,7 +6,9 @@ const authenticate = require("../../config/authenticate");
 const { deleteAssetFromDB } = require("../../utils/DBManagementHelpers");
 const {
   response500,
+  response401,
   response404,
+  response403,
   response200,
 } = require("../../utils/ResponseHelpers");
 
@@ -45,7 +47,7 @@ foodCrawlerRouter
     authenticate.verifyUser,
     authenticate.verifyAdmin,
     async (req, res, next) => {
-      FoodCrawler.create(food_crawl).then(
+      FoodCrawler.create(req.body).then(
         (crawler) => {
           if (!crawler)
             return response500(
@@ -71,15 +73,18 @@ foodCrawlerRouter
     cors.corsWithOptions,
     authenticate.verifyUser,
     authenticate.verifyAdmin,
-    (req, res, next) => {
-      FoodCrawler.find({})
+    async (req, res, next) => {
+      await FoodCrawler.find({})
         .then((list) => {
           if (!list)
             return response404("", res, "No match found in the system.");
-          list.map(async (e) => await deleteAssetFromDB(e.image_url));
+          list.map(async (e) => {
+            console.log(e);
+            await deleteAssetFromDB(e.poster_url);
+          });
         })
         .catch((err) => next(err));
-      FoodCrawler.remove({})
+      FoodCrawler.deleteMany({})
         .then((resp) => {
           return response200(resp, res);
         })
@@ -144,9 +149,9 @@ foodCrawlerRouter
         .then(async (food_crawler) => {
           if (!food_crawler) return response400("food crawler", res, null);
 
-          await deleteAssetFromDB(restaurant.image_url);
+          await deleteAssetFromDB(food_crawler.poster_url);
 
-          FoodCrawler.findByIdAndRemove(restaurant._id)
+          FoodCrawler.findByIdAndRemove(food_crawler._id)
             .then((resp) => response200(resp, res))
             .catch((err) => next(err));
         })

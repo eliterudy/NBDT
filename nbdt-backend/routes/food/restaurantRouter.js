@@ -6,7 +6,9 @@ const authenticate = require("../../config/authenticate");
 const { deleteAssetFromDB } = require("../../utils/DBManagementHelpers");
 const {
   response500,
+  response401,
   response404,
+  response403,
   response200,
 } = require("../../utils/ResponseHelpers");
 
@@ -86,10 +88,16 @@ foodCrawlerRouter
     authenticate.verifyAdmin,
     (req, res, next) => {
       Restaurant.find({})
-        .then((list) => {
+        .then(async (list) => {
           if (!list)
             return response404("", res, "No match found in the system.");
-          list.map(async (e) => await deleteAssetFromDB(e.image_url));
+          await list.map(async (e) => {
+            console.log(e);
+            await deleteAssetFromDB(e.logo_url);
+            await deleteAssetFromDB(e.banner_url);
+            await deleteAssetFromDB(e.poster_url);
+            return;
+          });
         })
         .catch((err) => next(err));
       Restaurant.remove({})
@@ -162,7 +170,9 @@ foodCrawlerRouter
         .then(async (restaurant) => {
           if (!restaurant) return response404("restaurant", res, null);
 
-          await deleteAssetFromDB(restaurant.image_url);
+          await deleteAssetFromDB(restaurant.poster_url);
+          await deleteAssetFromDB(restaurant.logo_url);
+          await deleteAssetFromDB(restaurant.banner_url);
 
           Restaurant.findByIdAndRemove(restaurant._id)
             .then((resp) => response200(resp, res))

@@ -1,5 +1,5 @@
 const response500 = (key = "", res, custom_message = null) => {
-  res.statusCode = 403;
+  res.statusCode = 500;
   res.setHeader("Content-Type", "application/json");
   return res.json({
     error: custom_message
@@ -32,7 +32,7 @@ const response403 = (operation, route, res) => {
 };
 
 const response200 = (data, res) => {
-  res.statusCode = 404;
+  res.statusCode = 200;
   res.setHeader("Content-Type", "application/json");
   return res.json(data);
 };

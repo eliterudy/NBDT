@@ -10,9 +10,10 @@ const {
 } = require("../../utils/DBManagementHelpers");
 const {
   response500,
-  response404,
-  response200,
   response401,
+  response404,
+  response403,
+  response200,
 } = require("../../utils/ResponseHelpers");
 // recursive adder function for new assets to the database.
 
@@ -72,8 +73,8 @@ assetRouter
       if (!upload_response.success) {
         return response500("image", res, null);
       } else {
-        await createAssetInDB(upload_response.result);
-        return response200(upload_response.result, res);
+        const AssetInfo = await createAssetInDB(upload_response.result);
+        return response200(AssetInfo ? AssetInfo : upload_response.result, res);
       }
     }
   )
@@ -81,23 +82,23 @@ assetRouter
     return response203("PUT", "/assets/", res);
   })
   .patch(cors.corsWithOptions, (req, res, next) => {
-    return response203("PUT", "/assets/", res);
+    return response203("PATCH", "/assets/", res);
   })
   .delete(
     authenticate.verifyUser,
     authenticate.verifyAdmin,
     (req, res, next) => {
-      if (!req.body.asset_id) {
-        return response401("Please provide asset _id for this asset.");
-      }
-      Asset.findById(req.body.id.toString())
+      if (!req.body.asset_id)
+        return response401("Please provide asset_id for this asset.", res);
+
+      Asset.findById(req.body.asset_id.toString())
         .then(
           async (asset) => {
             if (!asset) {
               return response404("asset", res, null);
             } else {
               await AssetStorageHandler.deletePhoto(asset.file_id);
-              Asset.findByIdAndRemove(food_crawler._id)
+              Asset.findByIdAndRemove(asset._id.toString())
                 .then((resp) => {
                   return response200(resp, res);
                 })

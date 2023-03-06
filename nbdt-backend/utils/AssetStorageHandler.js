@@ -10,18 +10,12 @@ var imagekit = new ImageKit({
   urlEndpoint: `https://ik.imagekit.io/${config.IMAGEKIT_ID}/`,
 });
 
-const uploadPhoto = async (
-  file,
-  category_type = env.DEFAULT_CATEGORY_TYPE,
-  folder_name = env.DEFAULT_FOLDER_NAME,
-  width = 1080,
-  height = 1080
-) => {
+const uploadPhoto = async (file, path, width = 1080, height = 1080) => {
   var imageKitResponse = await imagekit
     .upload({
       file: file.buffer,
       fileName: v4(),
-      folder: `${config.IMAGEKIT_FOLDER}/${category_type}/${folder_name}`,
+      folder: `${config.IMAGEKIT_FOLDER}/${path}`,
       /* ------- to transform images to specific aspects ||| DONT DELETE  -------- */
       // width: width,
       // height: height,

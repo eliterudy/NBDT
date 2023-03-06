@@ -8,7 +8,7 @@ var foodCrawlerSchema = new Schema(
       required: true,
       // unique: true,
     },
-    image_url: {
+    poster_url: {
       type: String,
       default: "",
     },
