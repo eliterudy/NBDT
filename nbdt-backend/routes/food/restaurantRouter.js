@@ -3,8 +3,6 @@ const bodyParser = require("body-parser");
 const cors = require("../../config/cors");
 const Restaurant = require("../../models/food-models/restaurants");
 const authenticate = require("../../config/authenticate");
-const AssetStorageHandler = require("../../utils/AssetStorageHandler");
-const Asset = require("../../models/asset-models/assets");
 const { deleteAssetFromDB } = require("../../utils/DBManagementHelpers");
 const {
   response500,
@@ -76,10 +74,10 @@ foodCrawlerRouter
         .catch((err) => next(err));
     }
   )
-  .put(cors.corsWithOptions, (req, res, next) =>
+  .put(cors.corsWithOptions, (req, res) =>
     response403("PUT", "/food/restaurants/", res)
   )
-  .patch(cors.corsWithOptions, (req, res, next) =>
+  .patch(cors.corsWithOptions, (req, res) =>
     response403("PATCH", "/food/restaurants/", res)
   )
   .delete(
@@ -115,20 +113,12 @@ foodCrawlerRouter
       .catch((err) => next(err));
   })
 
-  .post(cors.corsWithOptions, (req, res, next) => {
-    res.statusCode = 403;
-    res.end(
-      "POST operation not supported on /food/crawlers/id/" +
-        req.params.restaurant_id
-    );
-  })
-  .put(cors.corsWithOptions, (req, res, next) => {
-    res.statusCode = 403;
-    res.end(
-      "PUT operation not supported on /food/crawlers/id/" +
-        req.params.restaurant_id
-    );
-  })
+  .post(cors.corsWithOptions, (req, res) =>
+    response403("POST", "/food/restaurants/id/" + req.params.restaurant_id, res)
+  )
+  .put(cors.corsWithOptions, (req, res) =>
+    response403("PUT", "/food/restaurants/id/" + req.params.restaurant_id, res)
+  )
   .patch(
     cors.corsWithOptions,
     authenticate.verifyUser,
@@ -136,16 +126,16 @@ foodCrawlerRouter
     async (req, res, next) => {
       Restaurant.findById(req.params.restaurant_id)
         .then(async (restaurant) => {
-          if (!restaurant) {
-            res.statusCode = 403;
-            res.setHeader("Content-Type", "application/json");
-            return res.json({
-              error: "This restautant does not exist in the system.",
-            });
-          }
-          if (req.body.cover_url) {
-            await deleteAssetFromDB(restaurant.image_url);
-          }
+          if (!restaurant) return response404("restaurant", res, null);
+
+          if (req.body.poster_url && req.body.poster_url.length > 5)
+            await deleteAssetFromDB(restaurant.poster_url);
+
+          if (req.body.logo_url && req.body.logo_url.length > 5)
+            await deleteAssetFromDB(restaurant.logo_url);
+
+          if (req.body.banner_url && req.body.banner_url.length > 5)
+            await deleteAssetFromDB(restaurant.banner_url);
 
           Restaurant.findByIdAndUpdate(
             req.params.restaurant_id,
@@ -155,17 +145,8 @@ foodCrawlerRouter
             { new: true }
           )
             .then((restaurant_new) => {
-              if (!restaurant_new) {
-                res.statusCode = 404;
-                res.setHeader("Content-Type", "application/json");
-                return res.json({
-                  error: "This restautant does not exist in the system.",
-                });
-              } else {
-                res.statusCode = 200;
-                res.setHeader("Content-Type", "application/json");
-                return res.json(restaurant_new);
-              }
+              if (!restaurant_new) return response404("restaurant", res, null);
+              return response200(restaurant_new, res);
             })
             .catch((err) => next(err));
         })
@@ -179,21 +160,12 @@ foodCrawlerRouter
     async (req, res, next) => {
       Restaurant.findById(req.params.restaurant_id)
         .then(async (restaurant) => {
-          if (!restaurant) {
-            res.statusCode = 403;
-            res.setHeader("Content-Type", "application/json");
-            return res.json({
-              error: "This restaurant does not exist in the system.",
-            });
-          }
+          if (!restaurant) return response404("restaurant", res, null);
+
           await deleteAssetFromDB(restaurant.image_url);
 
-          FoodCrawler.findByIdAndRemove(restaurant._id)
-            .then((resp) => {
-              res.statusCode = 200;
-              res.setHeader("Content-Type", "application/json");
-              res.json(resp);
-            })
+          Restaurant.findByIdAndRemove(restaurant._id)
+            .then((resp) => response200(resp, res))
             .catch((err) => next(err));
         })
         .catch((err) => next(err));

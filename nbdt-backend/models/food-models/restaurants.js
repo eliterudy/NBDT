@@ -9,7 +9,7 @@ var restaurantSchema = new Schema(
       // unique: true,
     },
     image_urls: {
-      cover: {
+      poster: {
         type: String,
         default: "",
       },

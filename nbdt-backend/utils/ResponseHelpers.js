@@ -37,7 +37,7 @@ const response200 = (data, res) => {
   return res.json(data);
 };
 
-export default {
+module.exports = {
   response500,
   response401,
   response404,
