@@ -85,9 +85,7 @@ foodCrawlerRouter
         })
         .catch((err) => next(err));
       FoodCrawler.deleteMany({})
-        .then((resp) => {
-          return response200(resp, res);
-        })
+        .then((resp) => response200(resp, res))
         .catch((err) => next(err));
     }
   );
@@ -131,7 +129,7 @@ foodCrawlerRouter
           )
             .then((food_crawler_new) => {
               if (!food_crawler_new)
-                return response400("food crawler", res, null);
+                return response404("food crawler", res, null);
 
               return response200(food_crawler_new, res);
             })
@@ -147,7 +145,7 @@ foodCrawlerRouter
     async (req, res, next) => {
       FoodCrawler.findById(req.params.food_crawler_id)
         .then(async (food_crawler) => {
-          if (!food_crawler) return response400("food crawler", res, null);
+          if (!food_crawler) return response404("food crawler", res, null);
 
           await deleteAssetFromDB(food_crawler.poster_url);
 

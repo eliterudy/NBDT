@@ -12,14 +12,14 @@ const {
   response200,
 } = require("../../utils/ResponseHelpers");
 
-var foodCrawlerRouter = express.Router();
-foodCrawlerRouter.use(bodyParser.json());
+var restaurantRouter = express.Router();
+restaurantRouter.use(bodyParser.json());
 
-foodCrawlerRouter.options("*", cors.corsWithOptions, (req, res) => {
+restaurantRouter.options("*", cors.corsWithOptions, (req, res) => {
   res.sendStatus(200);
 });
 
-foodCrawlerRouter
+restaurantRouter
   .route("/")
   .options(cors.corsWithOptions, (req, res) => {
     res.sendStatus(200);
@@ -67,7 +67,7 @@ foodCrawlerRouter
                 res,
                 "We failed to add this restaurant to the system."
               );
-            else return response200(restaurant);
+            else return response200(restaurant, res);
           },
           (err) => {
             next(err);
@@ -86,27 +86,28 @@ foodCrawlerRouter
     cors.corsWithOptions,
     authenticate.verifyUser,
     authenticate.verifyAdmin,
-    (req, res, next) => {
-      Restaurant.find({})
+    async (req, res, next) => {
+      console.log("here");
+      await Restaurant.find({})
         .then(async (list) => {
           if (!list)
             return response404("", res, "No match found in the system.");
           await list.map(async (e) => {
             console.log(e);
+            await deleteAssetFromDB(e.poster_url);
             await deleteAssetFromDB(e.logo_url);
             await deleteAssetFromDB(e.banner_url);
-            await deleteAssetFromDB(e.poster_url);
             return;
           });
         })
         .catch((err) => next(err));
-      Restaurant.remove({})
+      Restaurant.deleteMany({})
         .then((resp) => response200(resp, res))
         .catch((err) => next(err));
     }
   );
 
-foodCrawlerRouter
+restaurantRouter
   .route("/id/:restaurant_id")
   .options(cors.corsWithOptions, (req, res) => {
     res.sendStatus(200);
@@ -182,4 +183,4 @@ foodCrawlerRouter
     }
   );
 
-module.exports = foodCrawlerRouter;
+module.exports = restaurantRouter;

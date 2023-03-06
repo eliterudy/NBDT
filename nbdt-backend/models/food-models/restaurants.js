@@ -5,30 +5,29 @@ var restaurantSchema = new Schema(
   {
     name: {
       type: String,
-      // required: true,
+      required: true,
       // unique: true,
     },
-    image_urls: {
-      poster: {
-        type: String,
-        default: "",
-      },
-      logo: {
-        type: String,
-        default: "",
-      },
-      banner: {
-        type: String,
-        default: "",
-      },
+
+    poster_url: {
+      type: String,
+      default: "",
+    },
+    logo_url: {
+      type: String,
+      default: "",
+    },
+    banner_url: {
+      type: String,
+      default: "",
     },
     price_range: {
       type: Number,
-      // required: true,
+      required: true,
     },
     rating: {
       type: Number,
-      // required: true,
+      required: true,
     },
     category: [
       {
@@ -57,17 +56,17 @@ var restaurantSchema = new Schema(
     address: {
       type: String,
       default: "",
-      // required: true,
+      required: true,
     },
     country_code: {
       type: String,
       default: "",
-      // required: true,
+      required: true,
     },
     phone: {
       type: String,
       default: "",
-      // required: true,
+      required: true,
     },
     schedule: [
       {
@@ -77,15 +76,15 @@ var restaurantSchema = new Schema(
     ],
     website_url: {
       type: String,
-      // required: true,
+      required: true,
     },
     spice_level: {
       type: Number,
-      // required: true,
+      required: true,
     },
     menu_url: {
       type: String,
-      // required: true,
+      required: true,
     },
     description: {
       type: String,
@@ -95,12 +94,12 @@ var restaurantSchema = new Schema(
       latitude: {
         type: String,
         default: "",
-        // required: true,
+        required: true,
       },
       longitude: {
         type: String,
         default: "",
-        // required: true,
+        required: true,
       },
     },
   },
