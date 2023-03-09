@@ -1,4 +1,6 @@
-import React from "react";
+import { StackNavigationProp } from "@react-navigation/stack";
+import type { RouteProp } from "@react-navigation/native";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -6,14 +8,26 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
+  ImageSourcePropType,
 } from "react-native";
 import { AirbnbRating } from "react-native-ratings";
+import {
+  RootStackParamList,
+  RestaurantDetails,
+} from "../../../../config/types";
 
-import { COLORS, FONTS, icons, SIZES } from "../constants";
+import { COLORS, dummyData, FONTS, icons, SIZES } from "../../../../constants";
 
-const Activity = ({ route, navigation }) => {
-  const { activity } = route.params;
-  const IconLabel = ({ icon, label }) => {
+type Props = {
+  route: RouteProp<RootStackParamList, "RestaurantDetail">;
+  navigation: StackNavigationProp<RootStackParamList, "RestaurantDetail">;
+  icon: ImageSourcePropType;
+  label: String;
+};
+
+const RestaurantDetail = ({ route, navigation }: Props) => {
+  const [data, setData] = useState<RestaurantDetails>(dummyData.RestoDetails);
+  const IconLabel = ({ icon, label }: Props) => {
     return (
       <View style={{ alignItems: "center" }}>
         <Image
@@ -34,7 +48,7 @@ const Activity = ({ route, navigation }) => {
       {/* Header */}
       <View style={{ flex: 1 }}>
         <Image
-          source={activity.header_image}
+          source={data.banner_image_url}
           resizeMode="cover"
           style={{ width: "100%", height: "80%" }}
         />
@@ -55,7 +69,7 @@ const Activity = ({ route, navigation }) => {
           <View style={{ flexDirection: "row" }}>
             <View style={styles.shadow}>
               <Image
-                source={activity.logo}
+                source={data.logo_url}
                 resizeMode="contain"
                 style={{
                   width: 70,
@@ -70,7 +84,7 @@ const Activity = ({ route, navigation }) => {
                 justifyContent: "space-around",
               }}
             >
-              <Text style={{ ...FONTS.h3 }}>{activity.name}</Text>
+              <Text style={{ ...FONTS.h3 }}>{data.name}</Text>
               <Text
                 style={{
                   color: COLORS.gray,
@@ -78,14 +92,14 @@ const Activity = ({ route, navigation }) => {
                   paddingRight: 50,
                 }}
               >
-                {activity.address}
+                {data.address}
               </Text>
               <View style={{ flex: 1, flexDirection: "row" }}>
                 <Text style={{ color: COLORS.gray, ...FONTS.body5 }}>
-                  {activity.phone}
+                  {data.phone}
                 </Text>
                 <AirbnbRating
-                  count={activity.rating}
+                  count={data.rating}
                   defaultRating={5}
                   isDisabled={true}
                   showRating={false}
@@ -112,29 +126,44 @@ const Activity = ({ route, navigation }) => {
           <TouchableOpacity
             onPress={() => {
               navigation.navigate("BrowserView", {
-                uri: activity.menu,
+                uri: data.menu_url,
               });
             }}
           >
-            <IconLabel icon={icons.menu} label="Menu" />
+            <IconLabel
+              icon={icons.menu}
+              label="Menu"
+              route={undefined}
+              navigation={undefined}
+            />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
               navigation.navigate("MapsView", {
-                data: activity,
+                data: data,
               });
             }}
           >
-            <IconLabel icon={icons.map} label="Directions" />
+            <IconLabel
+              icon={icons.map}
+              label="Directions"
+              route={undefined}
+              navigation={undefined}
+            />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
               navigation.navigate("BrowserView", {
-                uri: activity.website,
+                uri: data.website_url,
               });
             }}
           >
-            <IconLabel icon={icons.web} label="Website" />
+            <IconLabel
+              icon={icons.web}
+              label="Website"
+              route={undefined}
+              navigation={undefined}
+            />
           </TouchableOpacity>
         </View>
         {/* About */}
@@ -153,7 +182,7 @@ const Activity = ({ route, navigation }) => {
               ...FONTS.body3,
             }}
           >
-            {activity.hours}
+            {data.schedule}
           </Text>
           <Text style={{ ...FONTS.h2 }}>About</Text>
           <Text
@@ -163,7 +192,7 @@ const Activity = ({ route, navigation }) => {
               ...FONTS.body3,
             }}
           >
-            {activity.about}
+            {data.description}
           </Text>
         </View>
       </ScrollView>
@@ -188,4 +217,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Activity;
+export default RestaurantDetail;

@@ -7,6 +7,7 @@ import {
   StyleSheet,
   StyleProp,
   ViewStyle,
+  GestureResponderEvent,
 } from "react-native";
 import { Restaurant } from "../../../config/types";
 import { COLORS, FONTS, SIZES } from "../../../constants";
@@ -17,8 +18,8 @@ const RestaurantCard = ({
   onPress,
 }: {
   containerStyle?: ViewStyle;
-  restaurant: Restaurant | any;
-  onPress: Function;
+  restaurant: Restaurant;
+  onPress: (event: GestureResponderEvent) => void;
 }) => {
   return (
     <TouchableOpacity
@@ -34,17 +35,17 @@ const RestaurantCard = ({
           backgroundColor: COLORS.gray2,
         },
       ]}
-      onPress={() => onPress()}
+      onPress={() => onPress}
     >
       <Image
-        source={restaurant.image}
+        source={restaurant.image_url}
         resizeMode="cover"
         style={styles.image}
       />
       <View style={styles.details}>
         <Text style={styles.detailText}>{restaurant.name}</Text>
         <Text style={styles.descText}>
-          {restaurant.category} | {restaurant.priceRange}
+          {restaurant.category} | {restaurant.price_range}
         </Text>
       </View>
     </TouchableOpacity>

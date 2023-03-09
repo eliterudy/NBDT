@@ -1,3 +1,4 @@
+import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useState } from "react";
 import {
   ImageBackground,
@@ -8,11 +9,15 @@ import {
   TextInput,
   Platform,
 } from "react-native";
+import { RootStackParamList } from "../../config/types";
 import { COLORS, IMAGES } from "../../constants";
 const API_URL =
   Platform.OS === "ios" ? "http://localhost:5000" : "http://192.168.0.5:5000";
 
-const Auth = ({ navigation }) => {
+type Props = {
+  navigation: StackNavigationProp<RootStackParamList, "Auth">;
+};
+const Auth = ({ navigation }: Props) => {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
@@ -26,7 +31,7 @@ const Auth = ({ navigation }) => {
     setMessage("");
   };
 
-  const onLoggedIn = (token) => {
+  const onLoggedIn = (token: any) => {
     fetch(`${API_URL}/private`, {
       method: "GET",
       headers: {
@@ -39,7 +44,7 @@ const Auth = ({ navigation }) => {
           const jsonRes = await res.json();
           if (res.status === 200) {
             setMessage(jsonRes.message);
-            navigation.navigate("Landing");
+            navigation.navigate("FoodDashboard");
           }
         } catch (err) {
           console.log(err);

@@ -1,12 +1,26 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native/types";
+import {
+  StyleSheet,
+  Text,
+  View,
+  ViewStyle,
+  ImageStyle,
+} from "react-native/types";
 import GenericCards from "../../../../components/FunctionalComponents/Cards/GenericCards";
 import { COLORS, FONTS, SIZES } from "../../../../constants/theme";
+import { Restaurant } from "../../../../config/types";
+
 const RecommendationCard = ({
   containerStyle,
   activityItem,
   imageStyle,
   onPress,
+}: {
+  containerStyle?: ViewStyle;
+  imageStyle?: ImageStyle;
+  activityItem: Restaurant;
+  restaurant: Restaurant;
+  onPress: Function;
 }) => {
   return (
     <View style={{ position: "relative" }}>

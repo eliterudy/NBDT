@@ -5,12 +5,28 @@ import {
   Image,
   Platform,
   StyleSheet,
+  ViewStyle,
+  ImageStyle,
+  GestureResponderEvent,
 } from "react-native";
 import React from "react";
 import { SIZES, COLORS, FONTS, icons } from "../../../constants";
 import { Rating, AirbnbRating } from "react-native-ratings";
+import { Food_Crawls, Restaurant } from "../../../config/types";
 const GenericCards = {
-  ActivityCard: ({ containerStyle, activityItem, imageStyle, onPress }) => {
+  ActivityCard: ({
+    containerStyle,
+    activityItem,
+    foodCrawl,
+    imageStyle,
+    onPress,
+  }: {
+    containerStyle?: ViewStyle;
+    imageStyle?: ImageStyle;
+    activityItem: Restaurant;
+    foodCrawl: Food_Crawls;
+    onPress: (event: GestureResponderEvent) => void;
+  }) => {
     return (
       <TouchableOpacity
         style={{
@@ -23,7 +39,7 @@ const GenericCards = {
       >
         <View style={ActivityStyles.imageContainer}>
           <Image
-            source={activityItem.image}
+            source={activityItem.image_url}
             resizeMode="cover"
             style={{
               width: 250,
@@ -35,7 +51,7 @@ const GenericCards = {
 
         <View style={ActivityStyles.activityTitleContainer}>
           <Text style={ActivityStyles.activityTitle}>
-            {activityItem.name} | {activityItem.priceRange}
+            {activityItem.name} | {activityItem.price_range}
           </Text>
           {activityItem.rating ? (
             <AirbnbRating

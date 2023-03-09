@@ -2,9 +2,17 @@ import { View, Text, Dimensions, StyleSheet } from "react-native";
 import React from "react";
 import MapView, { PROVIDER_GOOGLE, Marker, Callout } from "react-native-maps";
 import { COLORS, FONTS } from "../../constants";
+import { RouteProp } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { RootStackParamList } from "../../config/types";
 
-const MapsView = ({ route, navigation }) => {
-  const { data } = route.params;
+type Props = {
+  route: RouteProp<RootStackParamList, "MapsView">;
+  navigation: StackNavigationProp<RootStackParamList, "MapsView">;
+};
+
+const MapsView = ({ route, navigation }: Props) => {
+  const data = route.params.data;
   function renderActivityCard() {
     return (
       <View style={{ flex: 1, padding: 10 }}>

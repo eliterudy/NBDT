@@ -1,32 +1,64 @@
-import React from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-  ScrollView,
-} from "react-native";
+import { RouteProp } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import React, { useEffect, useState } from "react";
+import { View, Text, StyleSheet, Image, ScrollView } from "react-native";
 import { SliderBox } from "react-native-image-slider-box";
-
 import RestaurantCard from "../../../../components/FunctionalComponents/Cards/RestaurantCard";
+import { Restaurant, RootStackParamList } from "../../../../config/types";
 import { COLORS, FONTS, SIZES } from "../../../../constants";
 
-const FoodCrawl = ({ route, navigation }) => {
-  const { crawlData, eateriesData } = route.params;
-  var selectedEateries = [];
-  for (var a = 0; a < Object.keys(crawlData.eateryId).length; a++) {
-    for (var b = 0; b < eateriesData.length; b++) {
-      if (Object.values(crawlData.eateryId)[a] == eateriesData[b].id) {
-        selectedEateries.push(eateriesData[b]);
-      }
-    }
-  }
+type Props = {
+  route: RouteProp<RootStackParamList, "FoodCrawl">;
+  navigation: StackNavigationProp<RootStackParamList, "FoodCrawl">;
+};
+
+const FoodCrawl = ({ route, navigation }: Props) => {
+  const crawlData = route.params.crawlData;
+  const eateriesData = route.params.eateriesData;
+  const [filteredDrinksResto, setFilteredDrinksResto] = useState([]);
+  const [filteredAppetizerResto, setFilteredAppetizerResto] = useState([]);
+  const [filteredEntreResto, setFilteredEntreResto] = useState([]);
+  const [filteredDessertResto, setFilteredDessertResto] = useState([]);
+
+  useEffect(() => {
+    setFilteredDrinksResto(
+      eateriesData.filter((resto) => {
+        return resto.crawlers.some(
+          (crawler: { crawl_id: string; type: number }) =>
+            crawler.crawl_id === crawlData.id && crawler.type === 0
+        );
+      })
+    );
+    setFilteredAppetizerResto(
+      eateriesData.filter((resto) => {
+        return resto.crawlers.some(
+          (crawler: { crawl_id: string; type: number }) =>
+            crawler.crawl_id === crawlData.id && crawler.type === 1
+        );
+      })
+    );
+    setFilteredEntreResto(
+      eateriesData.filter((resto) => {
+        return resto.crawlers.some(
+          (crawler: { crawl_id: string; type: number }) =>
+            crawler.crawl_id === crawlData.id && crawler.type === 2
+        );
+      })
+    );
+    setFilteredDessertResto(
+      eateriesData.filter((resto) => {
+        return resto.crawlers.some(
+          (crawler: { crawl_id: string; type: number }) =>
+            crawler.crawl_id === crawlData.id && crawler.type === 3
+        );
+      })
+    );
+  }, []);
+
   function renderStops() {
     return (
       <View>
-        {Object.keys(crawlData.eateryId)[0] == "Drinks" &&
-        crawlData.eateryId["Drinks"] != "NA" ? (
+        {filteredDrinksResto ? (
           <View
             style={{
               paddingHorizontal: SIZES.padding,
@@ -35,22 +67,18 @@ const FoodCrawl = ({ route, navigation }) => {
             }}
           >
             <Text style={{ ...FONTS.h2 }}>Drinks</Text>
-            <RestaurantCard
-              restaurant={selectedEateries.find((item) => {
-                return item.id == Object.values(crawlData.eateryId)[0];
-              })}
-              onPress={() => {
-                navigation.navigate("Activity", {
-                  activity: selectedEateries.find((item) => {
-                    return item.id == Object.values(crawlData.eateryId)[0];
-                  }),
-                });
-              }}
-            />
+
+            {filteredDrinksResto.map((resto) => (
+              <RestaurantCard
+                restaurant={resto}
+                onPress={() =>
+                  navigation.navigate("RestaurantDetail", { activity: resto })
+                }
+              />
+            ))}
           </View>
         ) : null}
-        {Object.keys(crawlData.eateryId)[1] == "Appetizer" &&
-        crawlData.eateryId["Appetizer"] != "NA" ? (
+        {filteredAppetizerResto ? (
           <View
             style={{
               paddingHorizontal: SIZES.padding,
@@ -59,22 +87,18 @@ const FoodCrawl = ({ route, navigation }) => {
             }}
           >
             <Text style={{ ...FONTS.h2 }}>Appetizers</Text>
-            <RestaurantCard
-              restaurant={selectedEateries.find((item) => {
-                return item.id == Object.values(crawlData.eateryId)[1];
-              })}
-              onPress={() => {
-                navigation.navigate("Activity", {
-                  activity: selectedEateries.find((item) => {
-                    return item.id == Object.values(crawlData.eateryId)[1];
-                  }),
-                });
-              }}
-            />
+
+            {filteredAppetizerResto.map((resto) => (
+              <RestaurantCard
+                restaurant={resto}
+                onPress={() =>
+                  navigation.navigate("RestaurantDetail", { activity: resto })
+                }
+              />
+            ))}
           </View>
         ) : null}
-        {Object.keys(crawlData.eateryId)[2] == "Entree" &&
-        crawlData.eateryId["Entree"] != "NA" ? (
+        {filteredEntreResto ? (
           <View
             style={{
               paddingHorizontal: SIZES.padding,
@@ -82,23 +106,19 @@ const FoodCrawl = ({ route, navigation }) => {
               marginTop: 30,
             }}
           >
-            <Text style={{ ...FONTS.h2 }}>Entré</Text>
-            <RestaurantCard
-              restaurant={selectedEateries.find((item) => {
-                return item.id == Object.values(crawlData.eateryId)[2];
-              })}
-              onPress={() => {
-                navigation.navigate("Activity", {
-                  activity: selectedEateries.find((item) => {
-                    return item.id == Object.values(crawlData.eateryId)[2];
-                  }),
-                });
-              }}
-            />
+            <Text style={{ ...FONTS.h2 }}>Entre</Text>
+
+            {filteredEntreResto.map((resto) => (
+              <RestaurantCard
+                restaurant={resto}
+                onPress={() =>
+                  navigation.navigate("RestaurantDetail", { activity: resto })
+                }
+              />
+            ))}
           </View>
         ) : null}
-        {Object.keys(crawlData.eateryId)[3] == "Dessert" &&
-        crawlData.eateryId["Dessert"] != "NA" ? (
+        {filteredDessertResto ? (
           <View
             style={{
               paddingHorizontal: SIZES.padding,
@@ -107,18 +127,15 @@ const FoodCrawl = ({ route, navigation }) => {
             }}
           >
             <Text style={{ ...FONTS.h2 }}>Dessert</Text>
-            <RestaurantCard
-              restaurant={selectedEateries.find((item) => {
-                return item.id == Object.values(crawlData.eateryId)[3];
-              })}
-              onPress={() => {
-                navigation.navigate("Activity", {
-                  activity: selectedEateries.find((item) => {
-                    return item.id == Object.values(crawlData.eateryId)[3];
-                  }),
-                });
-              }}
-            />
+
+            {filteredDessertResto.map((resto) => (
+              <RestaurantCard
+                restaurant={resto}
+                onPress={() =>
+                  navigation.navigate("RestaurantDetail", { activity: resto })
+                }
+              />
+            ))}
           </View>
         ) : null}
       </View>
@@ -130,7 +147,7 @@ const FoodCrawl = ({ route, navigation }) => {
       <ScrollView style={{ flex: 1 }}>
         <View style={{ position: "relative", paddingBottom: 40 }}>
           <SliderBox
-            images={crawlData.header_image}
+            images={crawlData.image_url}
             autoplay={true}
             sliderBoxHeight={340}
             circleLoop={true}
@@ -188,7 +205,7 @@ const FoodCrawl = ({ route, navigation }) => {
               ...FONTS.body3,
             }}
           >
-            {crawlData.about}
+            {crawlData.description}
           </Text>
         </View>
         <View style={{ flex: 1 }}>
@@ -225,14 +242,7 @@ const FoodCrawl = ({ route, navigation }) => {
               </Text>
             </View>
           </View>
-          {/* Drinks */}
           <View style={{ marginTop: 30 }}>{renderStops()}</View>
-
-          {/* Appetizers */}
-
-          {/* Entre */}
-
-          {/* Dessert */}
         </View>
       </ScrollView>
     </View>
