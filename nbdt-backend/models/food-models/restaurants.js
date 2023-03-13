@@ -23,7 +23,7 @@ var restaurantSchema = new Schema(
     },
     price_range: {
       type: Number,
-      required: true,
+      default: 0,
     },
     rating: {
       type: Number,
@@ -80,7 +80,7 @@ var restaurantSchema = new Schema(
     },
     spice_level: {
       type: Number,
-      required: true,
+      default: 0,
     },
     menu_url: {
       type: String,
