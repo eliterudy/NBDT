@@ -19,6 +19,7 @@ const FoodCrawl = ({ route, navigation }: Props) => {
   const [filteredAppetizerResto, setFilteredAppetizerResto] = useState([]);
   const [filteredEntreResto, setFilteredEntreResto] = useState([]);
   const [filteredDessertResto, setFilteredDessertResto] = useState([]);
+  const bannerImages = eateriesData.map((resto) => resto.image_url);
 
   useEffect(() => {
     setFilteredDrinksResto(
@@ -147,7 +148,7 @@ const FoodCrawl = ({ route, navigation }: Props) => {
       <ScrollView style={{ flex: 1 }}>
         <View style={{ position: "relative", paddingBottom: 40 }}>
           <SliderBox
-            images={crawlData.image_url}
+            images={bannerImages}
             autoplay={true}
             sliderBoxHeight={340}
             circleLoop={true}
