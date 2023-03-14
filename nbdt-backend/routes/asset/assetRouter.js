@@ -60,7 +60,7 @@ assetRouter
     AssetStorageHandler.multerConfig().single("image"),
     async (req, res, next) => {
       if (!req.file) {
-        return response401("Please provide an image");
+        return response401("Please provide an image", res);
       }
 
       var upload_response = await AssetStorageHandler.uploadPhoto(
