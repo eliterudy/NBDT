@@ -79,7 +79,6 @@ foodCrawlerRouter
           if (!list)
             return response404("", res, "No match found in the system.");
           list.map(async (e) => {
-            console.log(e);
             await deleteAssetFromDB(e.poster_url);
           });
         })

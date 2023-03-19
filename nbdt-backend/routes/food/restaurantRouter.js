@@ -87,13 +87,11 @@ restaurantRouter
     authenticate.verifyUser,
     authenticate.verifyAdmin,
     async (req, res, next) => {
-      console.log("here");
       await Restaurant.find({})
         .then(async (list) => {
           if (!list)
             return response404("", res, "No match found in the system.");
           await list.map(async (e) => {
-            console.log(e);
             await deleteAssetFromDB(e.poster_url);
             await deleteAssetFromDB(e.logo_url);
             await deleteAssetFromDB(e.banner_url);

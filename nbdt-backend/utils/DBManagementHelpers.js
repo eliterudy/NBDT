@@ -15,7 +15,6 @@ const createAssetInDB = async (asset_data) => {
 };
 
 const deleteAssetFromDB = async (image_url) => {
-  console.log("UMAG", image_url);
   await Asset.findOne({
     image_url: image_url.toString(),
   }).then(async (asset) => {
