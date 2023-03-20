@@ -6,6 +6,7 @@ var restaurantSchema = new Schema(
     name: {
       type: String,
       required: true,
+      // unique: true,
     },
 
     poster_url: {

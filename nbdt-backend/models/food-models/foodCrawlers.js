@@ -12,6 +12,10 @@ var foodCrawlerSchema = new Schema(
       type: String,
       default: "",
     },
+    // price_range: {
+    //   type: Number,
+    //   required: 0,
+    // },
     description: {
       type: String,
       default: "",

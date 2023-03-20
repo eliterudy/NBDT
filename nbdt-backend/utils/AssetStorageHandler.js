@@ -21,7 +21,6 @@ const uploadPhoto = async (file, path, width = 1080, height = 1080) => {
       // height: height,
     })
     .then(async (response) => {
-      console.log("HERE", response);
       var url = await imagekit.url({
         src: response.url,
         /* ------- to transform images to specific aspects ||| DONT DELETE  -------- */
