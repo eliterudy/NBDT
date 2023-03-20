@@ -8,7 +8,7 @@
     "start": "react-native start",
     "test": "jest",
     "lint": "eslint .",
-    "build:ios": "npx react-native bundle --entry-file index.ts --platform ios --dev false --bundle-output ios/main.jsbundle --assets-dest ios"
+    "build:ios": "npx react-native bundle --entry-file index.js --platform ios --dev false --bundle-output ios/main.jsbundle --assets-dest ios"
   },
   "dependencies": {
     "@react-native-community/cli": "^10.2.0",

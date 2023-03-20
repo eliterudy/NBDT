@@ -45,14 +45,12 @@ const FoodDashboard = ({ navigation }: Props) => {
     } else {
       setSearchOverlayToggle(true);
       let formattedQuery = text.toLowerCase();
-      console.log(formattedQuery);
       let filteredData = fullData.filter(
         (item) =>
           item.category[0].toLowerCase().includes(formattedQuery) ||
           // item.alternateCategory[0].toLowerCase().includes(formattedQuery) ||
           item.name.toLowerCase().includes(formattedQuery)
       );
-      console.log(filteredData);
       setData(filteredData);
       setQuery(text);
     }
