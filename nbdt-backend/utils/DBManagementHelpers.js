@@ -25,4 +25,6 @@ const deleteAssetFromDB = async (image_url) => {
   });
 };
 
-module.exports = { createAssetInDB, deleteAssetFromDB };
+// module.exports = { createAssetInDB, deleteAssetFromDB };
+
+exports.a = { createAssetInDB };
