@@ -21,6 +21,9 @@ import RecommendationCard from "./FoodCrawlCard";
 import FoodCrawlCard from "./FoodCrawlCard";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../../../../config/types";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState, AppDispatch } from "../../../../redux/store/store";
+import { fetchRestaurants } from "../../../../redux/reducers/restaurantReducer";
 
 type Props = {
   navigation: StackNavigationProp<RootStackParamList, "FoodDashboard">;
@@ -31,12 +34,15 @@ const FoodDashboard = ({ navigation }: Props) => {
   const [searchOverlayToggle, setSearchOverlayToggle] = useState(false);
   const [query, setQuery] = useState("");
   const [fullData, setFullData] = useState([]);
+  const restaurants = useSelector(
+    (state: RootState) => state.restaurant.restaurants
+  );
+  const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    setData(dummyData.Resto);
-    setFullData(dummyData.Resto);
+    dispatch(fetchRestaurants());
     setSearchOverlayToggle(false);
-  }, []);
+  }, [dispatch]);
 
   const handleSearch = (text: string) => {
     if (text === "") {
@@ -189,7 +195,7 @@ const FoodDashboard = ({ navigation }: Props) => {
     <SafeAreaView style={styles.container}>
       {renderSearchBar()}
       <FlatList
-        data={dummyData.Resto}
+        data={restaurants.results}
         keyExtractor={(item) => `${item.id}`}
         keyboardDismissMode="on-drag"
         showsVerticalScrollIndicator={false}
