@@ -5,6 +5,7 @@ import {
   View,
   ViewStyle,
   ImageStyle,
+  GestureResponderEvent,
 } from "react-native/types";
 import GenericCards from "../../../../components/FunctionalComponents/Cards/GenericCards";
 import { COLORS, FONTS, SIZES } from "../../../../constants/theme";
@@ -20,7 +21,7 @@ const RecommendationCard = ({
   imageStyle?: ImageStyle;
   activityItem: Restaurant;
   restaurant: Restaurant;
-  onPress: Function;
+  onPress: (event: GestureResponderEvent) => void;
 }) => {
   return (
     <View style={{ position: "relative" }}>

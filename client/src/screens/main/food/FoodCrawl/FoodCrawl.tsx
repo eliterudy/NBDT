@@ -1,11 +1,13 @@
 import { RouteProp } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Image, ScrollView } from "react-native";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { SliderBox } from "react-native-image-slider-box";
+import { useSelector } from "react-redux";
 import RestaurantCard from "../../../../components/FunctionalComponents/Cards/RestaurantCard";
-import { Restaurant, RootStackParamList } from "../../../../config/types";
+import { Crawler, RootStackParamList } from "../../../../config/types";
 import { COLORS, FONTS, SIZES } from "../../../../constants";
+import { RootState } from "../../../../redux/store/store";
 
 type Props = {
   route: RouteProp<RootStackParamList, "FoodCrawl">;
@@ -13,44 +15,59 @@ type Props = {
 };
 
 const FoodCrawl = ({ route, navigation }: Props) => {
-  const crawlData = route.params.crawlData;
-  const eateriesData = route.params.eateriesData;
+  const specificFoodCrawler = useSelector(
+    (state: RootState) => state.specificFoodCrawler.specificFoodCrawler
+  );
+  const restaurants = useSelector(
+    (state: RootState) => state.restaurant.restaurants.results
+  );
   const [filteredDrinksResto, setFilteredDrinksResto] = useState([]);
   const [filteredAppetizerResto, setFilteredAppetizerResto] = useState([]);
   const [filteredEntreResto, setFilteredEntreResto] = useState([]);
   const [filteredDessertResto, setFilteredDessertResto] = useState([]);
-  const bannerImages = eateriesData.map((resto) => resto.image_url);
+  const bannerImages = restaurants
+    .filter((restaurant: { crawlers: any[] }) =>
+      restaurant.crawlers.some(
+        (crawler) => crawler.crawl_id === specificFoodCrawler._id
+      )
+    )
+    .map((restaurant: { banner_url: any }) => restaurant.banner_url);
 
   useEffect(() => {
     setFilteredDrinksResto(
-      eateriesData.filter((resto) => {
+      restaurants.filter((resto: any) => {
         return resto.crawlers.some(
-          (crawler: { crawl_id: string; type: number }) =>
-            crawler.crawl_id === crawlData.id && crawler.type === 0
+          (crawler: Crawler) =>
+            crawler.crawl_id === specificFoodCrawler._id &&
+            crawler.meal_type === "0"
         );
       })
     );
+
     setFilteredAppetizerResto(
-      eateriesData.filter((resto) => {
+      restaurants.filter((resto: any) => {
         return resto.crawlers.some(
-          (crawler: { crawl_id: string; type: number }) =>
-            crawler.crawl_id === crawlData.id && crawler.type === 1
+          (crawler: Crawler) =>
+            crawler.crawl_id === specificFoodCrawler._id &&
+            crawler.meal_type === "1"
         );
       })
     );
     setFilteredEntreResto(
-      eateriesData.filter((resto) => {
+      restaurants.filter((resto: any) => {
         return resto.crawlers.some(
-          (crawler: { crawl_id: string; type: number }) =>
-            crawler.crawl_id === crawlData.id && crawler.type === 2
+          (crawler: Crawler) =>
+            crawler.crawl_id === specificFoodCrawler._id &&
+            crawler.meal_type === "2"
         );
       })
     );
     setFilteredDessertResto(
-      eateriesData.filter((resto) => {
+      restaurants.filter((resto: any) => {
         return resto.crawlers.some(
-          (crawler: { crawl_id: string; type: number }) =>
-            crawler.crawl_id === crawlData.id && crawler.type === 3
+          (crawler: Crawler) =>
+            crawler.crawl_id === specificFoodCrawler._id &&
+            crawler.meal_type === "3"
         );
       })
     );
@@ -183,7 +200,7 @@ const FoodCrawl = ({ route, navigation }: Props) => {
                 <Text
                   style={{ ...FONTS.h2, textAlign: "center", width: "100%" }}
                 >
-                  {crawlData.name}
+                  {specificFoodCrawler.name}
                 </Text>
               </View>
             </View>
@@ -206,7 +223,7 @@ const FoodCrawl = ({ route, navigation }: Props) => {
               ...FONTS.body3,
             }}
           >
-            {crawlData.description}
+            {specificFoodCrawler.description}
           </Text>
         </View>
         <View style={{ flex: 1 }}>

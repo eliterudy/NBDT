@@ -5,12 +5,12 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  StyleProp,
   ViewStyle,
   GestureResponderEvent,
 } from "react-native";
-import { Restaurant } from "../../../config/types";
+
 import { COLORS, FONTS, SIZES } from "../../../constants";
+import { restaurant } from "../../../redux/reducers/restaurantReducer";
 
 const RestaurantCard = ({
   containerStyle = {},
@@ -18,7 +18,7 @@ const RestaurantCard = ({
   onPress,
 }: {
   containerStyle?: ViewStyle;
-  restaurant: Restaurant;
+  restaurant: restaurant;
   onPress: (event: GestureResponderEvent) => void;
 }) => {
   return (
@@ -35,17 +35,17 @@ const RestaurantCard = ({
           backgroundColor: COLORS.gray2,
         },
       ]}
-      onPress={() => onPress}
+      onPress={onPress}
     >
       <Image
-        source={restaurant.image_url}
+        source={{ uri: restaurant.poster_url }}
         resizeMode="cover"
         style={styles.image}
       />
       <View style={styles.details}>
         <Text style={styles.detailText}>{restaurant.name}</Text>
         <Text style={styles.descText}>
-          {restaurant.category} | {restaurant.price_range}
+          {restaurant.category.join(" ")} | {restaurant.price_range}
         </Text>
       </View>
     </TouchableOpacity>
