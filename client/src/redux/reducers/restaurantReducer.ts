@@ -1,32 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Dispatch } from "redux";
 import { getRestaurants } from "../../apis/api";
-
-interface restaurant {
-  id: "";
-  name: "";
-  address: "";
-  phone: "";
-  country_code: "";
-  schedule: [];
-  alternate_category: [];
-  website_url: "";
-  menu_url: "";
-  spice_level: 0;
-  description: "";
-  coordinates: [];
-  logo_url: 0;
-  banner_image_url: 0;
-  image_url: 0;
-  price_range: 0;
-  rating: 0;
-  category: [];
-  crawlers: [];
-}
+import { Restaurant } from "../../config/types";
 
 interface RestaurantResponse {
   count: number;
-  results: restaurant[];
+  results: Restaurant[];
 }
 
 interface RestaurantState {

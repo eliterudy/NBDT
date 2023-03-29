@@ -1,6 +1,5 @@
 import { StackNavigationProp } from "@react-navigation/stack";
-import type { RouteProp } from "@react-navigation/native";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   View,
   Text,
@@ -11,22 +10,22 @@ import {
   ImageSourcePropType,
 } from "react-native";
 import { AirbnbRating } from "react-native-ratings";
-import {
-  RootStackParamList,
-  RestaurantDetails,
-} from "../../../../config/types";
-
-import { COLORS, dummyData, FONTS, icons, SIZES } from "../../../../constants";
+import { RootStackParamList } from "../../../../config/types";
+import { COLORS, FONTS, icons, SIZES } from "../../../../constants";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../../redux/store/store";
 
 type Props = {
-  route: RouteProp<RootStackParamList, "RestaurantDetail">;
   navigation: StackNavigationProp<RootStackParamList, "RestaurantDetail">;
   icon: ImageSourcePropType;
   label: String;
 };
 
-const RestaurantDetail = ({ route, navigation }: Props) => {
-  const [data, setData] = useState<RestaurantDetails>(dummyData.RestoDetails);
+const RestaurantDetail = ({ navigation }: Props) => {
+  const specificRestaurant = useSelector(
+    (state: RootState) => state.specificRestaurant.specificRestaurant
+  );
+
   const IconLabel = ({ icon, label }: Props) => {
     return (
       <View style={{ alignItems: "center" }}>
@@ -48,7 +47,7 @@ const RestaurantDetail = ({ route, navigation }: Props) => {
       {/* Header */}
       <View style={{ flex: 1 }}>
         <Image
-          source={data.banner_image_url}
+          source={{ uri: specificRestaurant.banner_url }}
           resizeMode="cover"
           style={{ width: "100%", height: "80%" }}
         />
@@ -69,7 +68,7 @@ const RestaurantDetail = ({ route, navigation }: Props) => {
           <View style={{ flexDirection: "row" }}>
             <View style={styles.shadow}>
               <Image
-                source={data.logo_url}
+                source={{ uri: specificRestaurant.logo_url }}
                 resizeMode="contain"
                 style={{
                   width: 70,
@@ -84,7 +83,7 @@ const RestaurantDetail = ({ route, navigation }: Props) => {
                 justifyContent: "space-around",
               }}
             >
-              <Text style={{ ...FONTS.h3 }}>{data.name}</Text>
+              <Text style={{ ...FONTS.h3 }}>{specificRestaurant.name}</Text>
               <Text
                 style={{
                   color: COLORS.gray,
@@ -92,14 +91,14 @@ const RestaurantDetail = ({ route, navigation }: Props) => {
                   paddingRight: 50,
                 }}
               >
-                {data.address}
+                {specificRestaurant.address}
               </Text>
               <View style={{ flex: 1, flexDirection: "row" }}>
                 <Text style={{ color: COLORS.gray, ...FONTS.body5 }}>
-                  {data.phone}
+                  {specificRestaurant.phone}
                 </Text>
                 <AirbnbRating
-                  count={data.rating}
+                  count={specificRestaurant.rating}
                   defaultRating={5}
                   isDisabled={true}
                   showRating={false}
@@ -126,42 +125,35 @@ const RestaurantDetail = ({ route, navigation }: Props) => {
           <TouchableOpacity
             onPress={() => {
               navigation.navigate("BrowserView", {
-                uri: data.menu_url,
+                uri: specificRestaurant.menu_url,
               });
             }}
           >
-            <IconLabel
-              icon={icons.menu}
-              label="Menu"
-              route={undefined}
-              navigation={undefined}
-            />
+            <IconLabel icon={icons.menu} label="Menu" navigation={undefined} />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
               navigation.navigate("MapsView", {
-                data: data,
+                data: specificRestaurant,
               });
             }}
           >
             <IconLabel
               icon={icons.map}
               label="Directions"
-              route={undefined}
               navigation={undefined}
             />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
               navigation.navigate("BrowserView", {
-                uri: data.website_url,
+                uri: specificRestaurant.website_url,
               });
             }}
           >
             <IconLabel
               icon={icons.web}
               label="Website"
-              route={undefined}
               navigation={undefined}
             />
           </TouchableOpacity>
@@ -182,7 +174,7 @@ const RestaurantDetail = ({ route, navigation }: Props) => {
               ...FONTS.body3,
             }}
           >
-            {data.schedule}
+            {specificRestaurant.schedule?.join("\n")}
           </Text>
           <Text style={{ ...FONTS.h2 }}>About</Text>
           <Text
@@ -192,7 +184,7 @@ const RestaurantDetail = ({ route, navigation }: Props) => {
               ...FONTS.body3,
             }}
           >
-            {data.description}
+            {specificRestaurant.description}
           </Text>
         </View>
       </ScrollView>

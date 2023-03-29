@@ -5,6 +5,8 @@ import { COLORS, FONTS } from "../../constants";
 import { RouteProp } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../../config/types";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store/store";
 
 type Props = {
   route: RouteProp<RootStackParamList, "MapsView">;
@@ -12,7 +14,9 @@ type Props = {
 };
 
 const MapsView = ({ route, navigation }: Props) => {
-  const data = route.params.data;
+  const specificRestaurant = useSelector(
+    (state: RootState) => state.specificRestaurant.specificRestaurant
+  );
   function renderActivityCard() {
     return (
       <View style={{ flex: 1, padding: 10 }}>
@@ -21,7 +25,7 @@ const MapsView = ({ route, navigation }: Props) => {
             justifyContent: "space-around",
           }}
         >
-          <Text style={{ ...FONTS.h3 }}>{data.name}</Text>
+          <Text style={{ ...FONTS.h3 }}>{specificRestaurant.name}</Text>
           <Text
             style={{
               color: COLORS.gray,
@@ -29,11 +33,11 @@ const MapsView = ({ route, navigation }: Props) => {
               paddingRight: 50,
             }}
           >
-            {data.address}
+            {specificRestaurant.address}
           </Text>
 
           <Text style={{ color: COLORS.gray, ...FONTS.body5 }}>
-            {data.phone}
+            {specificRestaurant.phone}
           </Text>
         </View>
       </View>
@@ -55,8 +59,8 @@ const MapsView = ({ route, navigation }: Props) => {
       >
         <Marker
           coordinate={{
-            latitude: data.coordinates[0],
-            longitude: data.coordinates[1],
+            latitude: parseFloat(specificRestaurant.coordinates.latitude),
+            longitude: parseFloat(specificRestaurant.coordinates.longitude),
           }}
         >
           <Callout>{renderActivityCard()}</Callout>
