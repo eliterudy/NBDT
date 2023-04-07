@@ -3,8 +3,14 @@ const bodyParser = require("body-parser");
 const cors = require("../../config/cors");
 const FoodCrawler = require("../../models/food-models/foodCrawlers");
 const authenticate = require("../../config/authenticate");
-const AssetStorageHandler = require("../../utils/AssetStorageHandler");
-const Asset = require("../../models/asset-models/assets");
+const { deleteAssetFromDB } = require("../../utils/DBManagementHelpers");
+const {
+  response500,
+  response401,
+  response404,
+  response403,
+  response200,
+} = require("@eliterudy/express-response-helper");
 
 var foodCrawlerRouter = express.Router();
 foodCrawlerRouter.use(bodyParser.json());
@@ -23,12 +29,13 @@ foodCrawlerRouter
       .then((list) => {
         FoodCrawler.count({}).then(
           (count) => {
-            res.statusCode = 200;
-            res.setHeader("Content-Type", "application/json");
-            res.json({
-              results: list,
-              count,
-            });
+            return response200(
+              {
+                results: list,
+                count,
+              },
+              res
+            );
           },
           (err) => next(err)
         );
@@ -39,93 +46,111 @@ foodCrawlerRouter
     cors.corsWithOptions,
     authenticate.verifyUser,
     authenticate.verifyAdmin,
-    AssetStorageHandler.multerConfig().single("image"),
     async (req, res, next) => {
-      if (!req.file) {
-        return res.status(401).json({ error: "Please provide an image" });
-      }
-      var uploadResponse = await AssetStorageHandler.uploadPhoto(
-        req.file,
-        "food",
-        "food-crawlers",
-        720,
-        720
+      FoodCrawler.create(req.body).then(
+        (crawler) => {
+          if (!crawler)
+            return response500(
+              "",
+              res,
+              "We failed to add this food crawler to the system."
+            );
+          else return response200(crawler, res);
+        },
+        (err) => {
+          next(err);
+        }
       );
-
-      if (uploadResponse.success) {
-        Asset.create(uploadResponse.result).then(
-          (asset) => {
-            const foodCrawl = {
-              ...req.body,
-              image_url: uploadResponse.result.image_url,
-            };
-            delete foodCrawl.image;
-            FoodCrawler.create(foodCrawl)
-              .then(
-                (crawler) => {
-                  res.statusCode = 200;
-                  res.setHeader("Content-Type", "application/json");
-                  res.json(crawler);
-                },
-                (err) => {
-                  if (err.code == 11000) {
-                    Asset.findById(asset._id.toString()).then((asset) => {
-                      if (asset) {
-                        AssetStorageHandler.deletePhoto(asset.file_id);
-                        Asset.findByIdAndRemove(asset._id);
-                      }
-                    });
-                    res.statusCode = 400;
-                    res.setHeader("Content-Type", "application/json");
-                    return res.json({
-                      error:
-                        "There is another crawler with the same name. We cannot have duplicate ",
-                    });
-                  }
-                  next(err);
-                }
-              )
-              .catch((err) => next(err));
-          },
-          (err) => next(err)
-        );
-      } else {
-        res.statusCode = 500;
-        res.setHeader("Content-Type", "application/json");
-        res.json({ error: "Image could not be saved/uploaded" });
-        return;
-      }
     }
   )
-  .put(cors.corsWithOptions, (req, res, next) => {
-    res.statusCode = 403;
-    res.end("PUT operation not supported on /food/crawlers/");
-  })
+  .put(cors.corsWithOptions, (req, res) =>
+    response403("PUT", "/food/crawlers/", res)
+  )
+  .patch(cors.corsWithOptions, (req, res) =>
+    response403("PATCH", "/food/crawlers/", res)
+  )
   .delete(
     cors.corsWithOptions,
     authenticate.verifyUser,
     authenticate.verifyAdmin,
-    (req, res, next) => {
-      FoodCrawler.find({})
+    async (req, res, next) => {
+      await FoodCrawler.find({})
         .then((list) => {
-          list &&
-            list.map((e) => {
-              Asset.findOne({ image_url: e.image_url.toString() }).then(
-                (asset) => {
-                  if (asset) {
-                    AssetStorageHandler.deletePhoto(asset.file_id);
-                    Asset.findByIdAndRemove(asset._id);
-                  }
-                }
-              );
-            });
+          if (!list)
+            return response404("", res, "No match found in the system.");
+          list.map(async (e) => {
+            await deleteAssetFromDB(e.poster_url);
+          });
         })
         .catch((err) => next(err));
-      FoodCrawler.remove({})
-        .then((resp) => {
-          res.statusCode = 200;
-          res.setHeader("Content-Type", "application/json");
-          res.json({ success: true, deleted: resp });
+      FoodCrawler.deleteMany({})
+        .then((resp) => response200(resp, res))
+        .catch((err) => next(err));
+    }
+  );
+
+foodCrawlerRouter
+  .route("/id/:food_crawler_id")
+  .options(cors.corsWithOptions, (req, res) => {
+    res.sendStatus(200);
+  })
+  .get(cors.cors, (req, res, next) => {
+    FoodCrawler.findById(req.params.food_crawler_id)
+      .then((food_crawler) => {
+        response200(food_crawler, res);
+      })
+      .catch((err) => next(err));
+  })
+  .post(cors.corsWithOptions, (req, res) =>
+    response403("POST", "/food/crawlers/id/" + req.params.food_crawler_id, res)
+  )
+  .put(cors.corsWithOptions, (req, res) =>
+    response403("PUT", "/food/crawlers/id/" + req.params.food_crawler_id, res)
+  )
+  .patch(
+    cors.corsWithOptions,
+    authenticate.verifyUser,
+    authenticate.verifyAdmin,
+    async (req, res, next) => {
+      FoodCrawler.findById(req.params.food_crawler_id).then(
+        async (food_crawler) => {
+          if (!food_crawler) return response404("food crawler", res, null);
+
+          if (req.body.poster_url)
+            await deleteAssetFromDB(food_crawler.poster_url);
+
+          FoodCrawler.findByIdAndUpdate(
+            req.params.food_crawler_id,
+            {
+              $set: req.body,
+            },
+            { new: true }
+          )
+            .then((food_crawler_new) => {
+              if (!food_crawler_new)
+                return response404("food crawler", res, null);
+
+              return response200(food_crawler_new, res);
+            })
+            .catch((err) => next(err));
+        }
+      );
+    }
+  )
+  .delete(
+    cors.corsWithOptions,
+    authenticate.verifyUser,
+    authenticate.verifyAdmin,
+    async (req, res, next) => {
+      FoodCrawler.findById(req.params.food_crawler_id)
+        .then(async (food_crawler) => {
+          if (!food_crawler) return response404("food crawler", res, null);
+
+          await deleteAssetFromDB(food_crawler.poster_url);
+
+          FoodCrawler.findByIdAndRemove(food_crawler._id)
+            .then((resp) => response200(resp, res))
+            .catch((err) => next(err));
         })
         .catch((err) => next(err));
     }

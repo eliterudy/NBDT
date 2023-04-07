@@ -1,7 +1,24 @@
 const trimRestaurant = (restaurant) => {
-  const { name, image_url, price_range, rating, category, crawlers } =
-    restaurant;
-  return { name, image_url, price_range, rating, category, crawlers };
+  const {
+    name,
+    poster_url,
+    banner_url,
+    price_range,
+    rating,
+    category,
+    alternate_category,
+    crawlers,
+  } = restaurant;
+  return {
+    name,
+    poster_url,
+    banner_url,
+    price_range,
+    rating,
+    category,
+    alternate_category,
+    crawlers,
+  };
 };
 
 const trimRestaurantList = (restaurants) => {

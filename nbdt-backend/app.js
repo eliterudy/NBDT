@@ -6,8 +6,9 @@ var passport = require("passport");
 var config = require("./config/config");
 var mongoose = require("mongoose");
 var indexRouter = require("./routes/index");
-const { foodCrawlerRouter } = require("./routes/food/index");
+const { foodCrawlerRouter, restaurantRouter } = require("./routes/food/index");
 const userRouter = require("./routes/user/userRouter");
+const assetRouter = require("./routes/asset/assetRouter");
 
 var mongoUrl = config.DB_CONNECT;
 var connect = mongoose.connect(mongoUrl, {
@@ -45,8 +46,9 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/", indexRouter);
 app.use("/users", userRouter);
-// app.use("/food/restaurants", restaurantRouter);
+app.use("/food/restaurants", restaurantRouter);
 app.use("/food/crawlers", foodCrawlerRouter);
+app.use("/assets", assetRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

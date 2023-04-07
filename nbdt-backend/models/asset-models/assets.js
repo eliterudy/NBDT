@@ -6,7 +6,7 @@ var assetSchema = new Schema(
     name: {
       type: String,
       required: true,
-      unique: true,
+      // unique: true,
     },
     image_url: {
       type: String,

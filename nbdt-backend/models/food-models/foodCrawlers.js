@@ -6,16 +6,16 @@ var foodCrawlerSchema = new Schema(
     name: {
       type: String,
       required: true,
-      unique: true,
+      // unique: true,
     },
-    image_url: {
+    poster_url: {
       type: String,
       default: "",
     },
-    price_range: {
-      type: Number,
-      required: 0,
-    },
+    // price_range: {
+    //   type: Number,
+    //   required: 0,
+    // },
     description: {
       type: String,
       default: "",
