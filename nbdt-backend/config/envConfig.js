@@ -2,8 +2,9 @@ const dotenv = require("dotenv");
 const { resolve } = require("path");
 
 if (process.env.NODE_ENV) {
+  const envKeys = resolve(__dirname, `../secrets/.env.${process.env.NODE_ENV}`);
   dotenv.config({
-    path: resolve(__dirname, `../.env.${process.env.NODE_ENV}`),
+    path: envKeys,
   });
 } else {
   dotenv.config();

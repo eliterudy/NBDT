@@ -4,7 +4,8 @@ var User = require("../models/user-models/users");
 var JtwStrategy = require("passport-jwt").Strategy;
 var ExtractJwt = require("passport-jwt").ExtractJwt;
 var jwt = require("jsonwebtoken");
-var config = require("./config");
+var Configs = require("../config/index");
+console.log("CONGIFGSDF", Configs);
 
 exports.local = passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
@@ -13,12 +14,12 @@ passport.deserializeUser(User.deserializeUser());
 /* To generate Token using JwtWebToken and use sign method */
 exports.getToken = (user_id) => {
   // params are payload data, secret key for encription and other options
-  return jwt.sign(user_id, config.JWT_SECRET);
+  return jwt.sign(user_id, Configs.JWT_SECRET);
 };
 
 var optionsForJWTStragety = {};
 optionsForJWTStragety.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
-optionsForJWTStragety.secretOrKey = config.JWT_SECRET;
+optionsForJWTStragety.secretOrKey = Configs.JWT_SECRET;
 
 exports.jwtPassport = passport.use(
   new JtwStrategy(optionsForJWTStragety, (jwt_payload, done) => {

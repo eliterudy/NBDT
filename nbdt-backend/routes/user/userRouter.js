@@ -2,7 +2,7 @@ var express = require("express");
 const bodyParser = require("body-parser");
 var passport = require("passport");
 const User = require("../../models/user-models/users");
-const authenticate = require("../../config/authenticate");
+const authenticate = require("../../utils/authenticate");
 const cors = require("../../config/cors");
 const DataTrimmer = require("../../utils/DataTrimmer");
 

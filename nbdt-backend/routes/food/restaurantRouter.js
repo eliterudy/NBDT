@@ -2,7 +2,7 @@ var express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("../../config/cors");
 const Restaurant = require("../../models/food-models/restaurants");
-const authenticate = require("../../config/authenticate");
+const authenticate = require("../../utils/authenticate");
 const { deleteAssetFromDB } = require("../../utils/DBManagementHelpers");
 const {
   response500,

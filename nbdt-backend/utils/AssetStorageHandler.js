@@ -1,13 +1,12 @@
 var path = require("path");
-var multer = require("multer");
 const { v4 } = require("uuid");
 
 var ImageKit = require("imagekit");
-var config = require("../config/config");
+var Configs = require("../config/index");
 var imagekit = new ImageKit({
-  publicKey: `${config.IMAGEKIT_PUBLIC_KEY}`,
-  privateKey: `${config.IMAGEKIT_PRIVATE_KEY}`,
-  urlEndpoint: `https://ik.imagekit.io/${config.IMAGEKIT_ID}/`,
+  publicKey: `${Configs.IMAGEKIT_PUBLIC_KEY}`,
+  privateKey: `${Configs.IMAGEKIT_PRIVATE_KEY}`,
+  urlEndpoint: `https://ik.imagekit.io/${Configs.IMAGEKIT_ID}/`,
 });
 
 const uploadPhoto = async (file, path, width = 1080, height = 1080) => {
@@ -15,7 +14,7 @@ const uploadPhoto = async (file, path, width = 1080, height = 1080) => {
     .upload({
       file: file.buffer,
       fileName: v4(),
-      folder: `${config.IMAGEKIT_FOLDER}/${path}`,
+      folder: `${Configs.IMAGEKIT_FOLDER}/${path}`,
       /* ------- to transform images to specific aspects ||| DONT DELETE  -------- */
       // width: width,
       // height: height,
@@ -48,15 +47,8 @@ const uploadPhoto = async (file, path, width = 1080, height = 1080) => {
   return imageKitResponse;
 };
 
-const multerConfig = () =>
-  multer({
-    limits: {
-      fileSize: 40 * 720 * 720,
-    },
-  });
-
 const deletePhoto = async (id) => {
   imagekit.deleteFile(id, (error, result) => {});
 };
 
-module.exports = { uploadPhoto, deletePhoto, multerConfig };
+module.exports = { uploadPhoto, deletePhoto };
