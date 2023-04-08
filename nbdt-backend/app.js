@@ -12,7 +12,6 @@ const assetRouter = require("./routes/asset/assetRouter");
 
 var mongoUrl = Configs.DB_CONNECT;
 
-console.log("Configs", Configs);
 var connect = mongoose.connect(mongoUrl, {
   // strictQuery: true,
   useUnifiedTopology: true,
