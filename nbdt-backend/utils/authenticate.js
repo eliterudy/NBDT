@@ -5,7 +5,6 @@ var JtwStrategy = require("passport-jwt").Strategy;
 var ExtractJwt = require("passport-jwt").ExtractJwt;
 var jwt = require("jsonwebtoken");
 var Configs = require("../config/index");
-console.log("CONGIFGSDF", Configs);
 
 exports.local = passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());

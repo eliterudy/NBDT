@@ -2,8 +2,9 @@ var multer = require("multer");
 
 const multerConfig = () =>
   multer({
+    storage: multer.memoryStorage(),
     limits: {
-      fileSize: 40 * 720 * 720,
+      fileSize: 4 * 1024 * 1024,
     },
   });
 

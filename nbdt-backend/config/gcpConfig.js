@@ -1,11 +1,11 @@
 const { resolve } = require("path");
 const Cloud = require("@google-cloud/storage");
-const gcpServiceKey = resolve(__dirname, `../secrets/keys.json`);
-
+const gcpServiceKey = resolve(__dirname, `../secrets/gcp-storage-key.json`);
+const Configs = require("./index");
 const { Storage } = Cloud;
-const storage = new Storage({
+const gcpStorage = new Storage({
   keyFilename: gcpServiceKey,
-  projectId: "your project id",
+  projectId: Configs.GOOGLE_PROJECT_ID,
 });
 
-module.exports = { storage };
+module.exports = { gcpStorage };
