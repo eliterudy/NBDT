@@ -1,54 +1,53 @@
 var path = require("path");
 const { v4 } = require("uuid");
+const Configs = require("../config");
 
-var ImageKit = require("imagekit");
-var Configs = require("../config/index");
-var imagekit = new ImageKit({
-  publicKey: `${Configs.IMAGEKIT_PUBLIC_KEY}`,
-  privateKey: `${Configs.IMAGEKIT_PRIVATE_KEY}`,
-  urlEndpoint: `https://ik.imagekit.io/${Configs.IMAGEKIT_ID}/`,
-});
+// var ImageKit = require("imagekit");
+// var Configs = require("../config/index");
+// var imagekit = new ImageKit({
+//   publicKey: `${Configs.IMAGEKIT_PUBLIC_KEY}`,
+//   privateKey: `${Configs.IMAGEKIT_PRIVATE_KEY}`,
+//   urlEndpoint: `https://ik.imagekit.io/${Configs.IMAGEKIT_ID}/`,
+// });
 
-const uploadPhoto = async (file, path, width = 1080, height = 1080) => {
-  var imageKitResponse = await imagekit
-    .upload({
-      file: file.buffer,
-      fileName: v4(),
-      folder: `${Configs.IMAGEKIT_FOLDER}/${path}`,
-      /* ------- to transform images to specific aspects ||| DONT DELETE  -------- */
-      // width: width,
-      // height: height,
-    })
-    .then(async (response) => {
-      var url = await imagekit.url({
-        src: response.url,
-        /* ------- to transform images to specific aspects ||| DONT DELETE  -------- */
-        // transformation: [
-        //   {
-        //     height: height,
-        //     width: width,
-        //     aspectRatio: 1 / 1,
-        //   },
-        // ],
-      });
+const { gcpStorage: gc } = require("../config/index");
+const bucket = gc.bucket(Configs.GOOGLE_STORAGE_BUCKET); // should be your bucket name
+
+const uploadPhoto = (file, path, width = 1080, height = 1080) => {
+  path = path.substring(1);
+  const { buffer, mimetype: contentType } = file;
+  const imageName = v4();
+  const image = bucket.file(`${path}/${imageName}`);
+  const uploadResponse = image.save(buffer, { contentType }, (err) => {
+    if (!err) {
+      const imageServerUrl = `${Configs.GOOGLE_STORAGE_URL}/${Configs.GOOGLE_STORAGE_BUCKET}/${path}/${imageName}`;
       return {
         success: true,
         result: {
-          image_url: url,
-          file_id: response.fileId,
-          file_path: response.filePath,
-          name: response.name,
+          image_url: imageServerUrl,
+          file_id: imageName,
+          file_path: `/${path}`,
+          name: imageName,
         },
       };
-    })
-    .catch((e) => {
+    } else {
       return { success: false, url: "" };
-    });
-  return imageKitResponse;
+    }
+  });
+
+  return uploadResponse;
 };
 
-const deletePhoto = async (id) => {
-  imagekit.deleteFile(id, (error, result) => {});
+const deletePhoto = async (fileName, path) => {
+  path = path.substring(1);
+  const image = bucket.file(`${path}/${fileName}`);
+
+  image
+    .delete()
+    .then((resp) => {
+      console.log("RESP", resp);
+    })
+    .catch((e) => console.log("ERROR", e));
 };
 
 module.exports = { uploadPhoto, deletePhoto };

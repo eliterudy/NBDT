@@ -86,16 +86,24 @@ assetRouter
     authenticate.verifyUser,
     authenticate.verifyAdmin,
     (req, res, next) => {
-      if (!req.body.asset_id)
-        return response401("Please provide asset_id for this asset.", res);
+      if (!req.body.file_id)
+        return response401(
+          "Please provide both: the file_id for this asset.",
+          res
+        );
 
-      Asset.findById(req.body.asset_id.toString())
+      Asset.findOne({
+        file_id: req.body.file_id.toString(),
+      })
         .then(
           async (asset) => {
             if (!asset) {
               return response404("asset", res, null);
             } else {
-              await AssetStorageHandler.deletePhoto(asset.file_id);
+              await AssetStorageHandler.deletePhoto(
+                asset.file_id,
+                asset.file_path
+              );
               Asset.findByIdAndRemove(asset._id.toString())
                 .then((resp) => {
                   return response200(resp, res);
