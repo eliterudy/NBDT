@@ -14,29 +14,49 @@ import {
   SIZES,
   icons,
   IMAGES as images,
-  dummyData,
 } from "../../../../constants";
 import RestaurantCard from "../../../../components/FunctionalComponents/Cards/RestaurantCard";
 import RecommendationCard from "./FoodCrawlCard";
 import FoodCrawlCard from "./FoodCrawlCard";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../../../../config/types";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState, AppDispatch } from "../../../../redux/store/store";
+import { fetchRestaurants } from "../../../../redux/reducers/restaurantReducer";
+import { fetchFoodCrawlers } from "../../../../redux/reducers/foodCrawlerReducer";
+import { fetchSpecificRestaurants } from "../../../../redux/reducers/specificRestaurantReducer";
+import { fetchSpecificFoodCrawler } from "../../../../redux/reducers/specificFoodCrawlerReducer";
 
 type Props = {
   navigation: StackNavigationProp<RootStackParamList, "FoodDashboard">;
 };
 
 const FoodDashboard = ({ navigation }: Props) => {
-  const [data, setData] = useState([]);
   const [searchOverlayToggle, setSearchOverlayToggle] = useState(false);
   const [query, setQuery] = useState("");
-  const [fullData, setFullData] = useState([]);
+  const [searchdata, setSearchData] = useState([]);
+
+  const restaurants = useSelector(
+    (state: RootState) => state.restaurant.restaurants
+  );
+  const foodCrawlers = useSelector(
+    (state: RootState) => state.foodCrawler.foodCrawlers
+  );
+  const specificRestaurant = useSelector(
+    (state: RootState) => state.specificRestaurant.specificRestaurant
+  );
+
+  const specificFoodCrawler = useSelector(
+    (state: RootState) => state.specificFoodCrawler.specificFoodCrawler
+  );
+
+  const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    setData(dummyData.Resto);
-    setFullData(dummyData.Resto);
+    dispatch(fetchRestaurants());
+    dispatch(fetchFoodCrawlers());
     setSearchOverlayToggle(false);
-  }, []);
+  }, [dispatch]);
 
   const handleSearch = (text: string) => {
     if (text === "") {
@@ -45,13 +65,15 @@ const FoodDashboard = ({ navigation }: Props) => {
     } else {
       setSearchOverlayToggle(true);
       let formattedQuery = text.toLowerCase();
-      let filteredData = fullData.filter(
+      let filteredData = restaurants.results.filter(
         (item) =>
-          item.category[0].toLowerCase().includes(formattedQuery) ||
-          // item.alternateCategory[0].toLowerCase().includes(formattedQuery) ||
+          String(item.category).toLowerCase().includes(formattedQuery) ||
+          String(item.alternate_category)
+            .toLowerCase()
+            .includes(formattedQuery) ||
           item.name.toLowerCase().includes(formattedQuery)
       );
-      setData(filteredData);
+      setSearchData(filteredData);
       setQuery(text);
     }
   };
@@ -75,10 +97,12 @@ const FoodDashboard = ({ navigation }: Props) => {
   }
   function renderSearchBarOverlay() {
     return searchOverlayToggle ? (
-      data.length ? (
+      searchdata.length ? (
         <FlatList
-          data={data}
-          keyExtractor={(item) => `${item.id}`}
+          data={searchdata}
+          keyExtractor={(item) => {
+            return item._id;
+          }}
           keyboardDismissMode="on-drag"
           showsVerticalScrollIndicator={false}
           renderItem={({ item }) => {
@@ -86,9 +110,10 @@ const FoodDashboard = ({ navigation }: Props) => {
               <RestaurantCard
                 restaurant={item}
                 containerStyle={{ marginHorizontal: 10 }}
-                onPress={() => {
+                onPress={async () => {
+                  await dispatch(fetchSpecificRestaurants(item._id));
                   navigation.navigate("RestaurantDetail", {
-                    activity: item,
+                    activity: specificRestaurant,
                   });
                 }}
               />
@@ -129,10 +154,12 @@ const FoodDashboard = ({ navigation }: Props) => {
       <View style={styles.activityContainer}>
         <Text style={styles.activityText}>Recommended For You</Text>
         <FlatList
-          data={dummyData.Resto}
+          data={restaurants.results}
           horizontal
           showsHorizontalScrollIndicator={false}
-          keyExtractor={(item) => `${item.id}`}
+          keyExtractor={(item) => {
+            return item._id;
+          }}
           renderItem={({ item, index }) => {
             return index == 0 ||
               index == 1 ||
@@ -143,9 +170,10 @@ const FoodDashboard = ({ navigation }: Props) => {
                 activityItem={item}
                 containerStyle={{ height: 350 }}
                 imageStyle={{ height: 300 }}
-                onPress={() => {
+                onPress={async () => {
+                  await dispatch(fetchSpecificRestaurants(item._id));
                   navigation.navigate("RestaurantDetail", {
-                    activity: item,
+                    activity: specificRestaurant,
                   });
                 }}
               />
@@ -160,20 +188,23 @@ const FoodDashboard = ({ navigation }: Props) => {
       <View>
         <Text style={styles.activityText}>Food Crawls</Text>
         <FlatList
-          data={dummyData.foodCrawls}
+          data={foodCrawlers.results}
           horizontal
           showsHorizontalScrollIndicator={false}
-          keyExtractor={(item) => `${item.id}`}
+          keyExtractor={(item) => {
+            return item._id;
+          }}
           renderItem={({ item }) => {
             return (
               <FoodCrawlCard
                 activityItem={item}
                 containerStyle={{ height: 250 }}
                 imageStyle={{ height: 200 }}
-                onPress={() => {
+                onPress={async () => {
+                  await dispatch(fetchSpecificFoodCrawler(item._id));
                   navigation.navigate("FoodCrawl", {
-                    crawlData: item,
-                    eateriesData: dummyData.Resto,
+                    crawlData: specificFoodCrawler,
+                    eateriesData: restaurants.results,
                   });
                 }}
               />
@@ -189,15 +220,22 @@ const FoodDashboard = ({ navigation }: Props) => {
     <SafeAreaView style={styles.container}>
       {renderSearchBar()}
       <FlatList
-        data={dummyData.Resto}
-        keyExtractor={(item) => `${item.id}`}
+        data={restaurants.results}
+        keyExtractor={(item) => {
+          return item._id;
+        }}
         keyboardDismissMode="on-drag"
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           <View>
-            {searchOverlayToggle
-              ? renderSearchBarOverlay()
-              : [renderRecommendedRestaurants(), renderFoodCrawls()]}
+            {searchOverlayToggle ? (
+              renderSearchBarOverlay()
+            ) : (
+              <>
+                {renderRecommendedRestaurants()}
+                {renderFoodCrawls()}
+              </>
+            )}
           </View>
         }
         renderItem={({ item }) => {
@@ -205,8 +243,11 @@ const FoodDashboard = ({ navigation }: Props) => {
             <RestaurantCard
               restaurant={item}
               containerStyle={{ marginHorizontal: 10 }}
-              onPress={() => {
-                navigation.navigate("RestaurantDetail", { activity: item });
+              onPress={async () => {
+                await dispatch(fetchSpecificRestaurants(item._id));
+                navigation.navigate("RestaurantDetail", {
+                  activity: specificRestaurant ? specificRestaurant : null,
+                });
               }}
             />
           ) : null;

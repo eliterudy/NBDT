@@ -1,45 +1,42 @@
-import { ImageProps } from "react-native";
 export interface Restaurant {
-  id: string;
-  name: string;
-  image_url: ImageProps["source"];
-  price_range: number;
-  rating: number;
-  category: string[];
-  crawlers?: Crawler[];
-}
-
-export interface RestaurantDetails extends Restaurant {
-  address: string;
-  phone: string;
-  country_code: string;
-  schedule: String[];
+  _id: any;
+  id: "";
+  name: "";
+  address: "";
+  phone: "";
+  country_code: "";
+  schedule: string[];
   alternate_category: string[];
-  website_url: string;
-  menu_url: string;
-  spice_level: number;
-  description: string;
-  coordinates: number[];
-  logo_url: ImageProps["source"];
-  banner_image_url: ImageProps["source"];
+  website_url: "";
+  menu_url: "";
+  spice_level: 0;
+  description: "";
+  coordinates: Coordinates[];
+  logo_url: "";
+  banner_url: "";
+  poster_url: "";
+  price_range: 0;
+  rating: 0;
+  category: string[];
+  crawlers: Crawler[];
+}
+export interface Coordinates {
+  latitude: number;
+  longitude: number;
 }
 
 export interface Crawler {
   crawl_id: string;
-  type: number;
+  meal_type: string;
 }
 
-export interface Food_Crawls {
-  id: string;
-  name: string;
-  price_range: number;
-  image_url: string;
-  description: string;
-}
-
-export interface Category {
-  id: string;
-  name: string;
+export interface FoodCrawler {
+  _id: "";
+  name: "";
+  price_range: 0;
+  poster_url: "";
+  description: "";
+  rating: 0;
 }
 
 export type RootStackParamList = {
@@ -48,6 +45,6 @@ export type RootStackParamList = {
   Tabs: undefined;
   BrowserView: { uri: String };
   RestaurantDetail: {};
-  MapsView: { data: RestaurantDetails };
-  FoodCrawl: { crawlData: Food_Crawls; eateriesData: Restaurant[] };
+  MapsView: { data: Restaurant };
+  FoodCrawl: { crawlData: {}; eateriesData: {} };
 };

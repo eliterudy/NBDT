@@ -3,30 +3,31 @@ import {
   Text,
   TouchableOpacity,
   Image,
-  Platform,
   StyleSheet,
   ViewStyle,
   ImageStyle,
   GestureResponderEvent,
 } from "react-native";
 import React from "react";
-import { SIZES, COLORS, FONTS, icons } from "../../../constants";
-import { Rating, AirbnbRating } from "react-native-ratings";
-import { Food_Crawls, Restaurant } from "../../../config/types";
+import { SIZES, COLORS, FONTS } from "../../../constants";
+import { AirbnbRating } from "react-native-ratings";
+import { FoodCrawler, Restaurant } from "../../../config/types";
+
 const GenericCards = {
   ActivityCard: ({
     containerStyle,
     activityItem,
-    foodCrawl,
+    crawlData,
     imageStyle,
     onPress,
   }: {
     containerStyle?: ViewStyle;
     imageStyle?: ImageStyle;
-    activityItem: Restaurant;
-    foodCrawl: Food_Crawls;
+    activityItem: Restaurant | FoodCrawler;
+    crawlData?: FoodCrawler;
     onPress: (event: GestureResponderEvent) => void;
   }) => {
+    const priceRanges = ["$", "$$", "$$$", "$$$$", "$$$$$"]; // Array of dollar signs for each price range
     return (
       <TouchableOpacity
         style={{
@@ -39,7 +40,7 @@ const GenericCards = {
       >
         <View style={ActivityStyles.imageContainer}>
           <Image
-            source={activityItem.image_url}
+            source={{ uri: activityItem.poster_url }}
             resizeMode="cover"
             style={{
               width: 250,
@@ -51,7 +52,10 @@ const GenericCards = {
 
         <View style={ActivityStyles.activityTitleContainer}>
           <Text style={ActivityStyles.activityTitle}>
-            {activityItem.name} | {activityItem.price_range}
+            {activityItem.name}{" "}
+            {activityItem.price_range && activityItem.price_range !== null
+              ? `| ${priceRanges[activityItem.price_range - 1]}` // Access the appropriate dollar sign based on the price range
+              : null}
           </Text>
           {activityItem.rating ? (
             <AirbnbRating

@@ -1,24 +1,33 @@
 import React from "react";
-import { ImageStyle, StyleSheet, Text, View, ViewStyle } from "react-native";
+import {
+  GestureResponderEvent,
+  ImageStyle,
+  StyleSheet,
+  View,
+  ViewStyle,
+} from "react-native";
 import GenericCards from "../../../../components/FunctionalComponents/Cards/GenericCards";
-import { Food_Crawls, Restaurant } from "../../../../config/types";
-import { COLORS, FONTS, SIZES } from "../../../../constants/theme";
+import { FoodCrawler, Restaurant } from "../../../../config/types";
+
 const FoodCrawlCard = ({
   containerStyle,
   activityItem,
+  crawlData,
   imageStyle,
   onPress,
 }: {
   containerStyle?: ViewStyle;
   imageStyle?: ImageStyle;
-  activityItem: Food_Crawls | Restaurant;
-  onPress: Function;
+  activityItem: Restaurant | FoodCrawler;
+  crawlData?: FoodCrawler;
+  onPress: (event: GestureResponderEvent) => void;
 }) => {
   return (
     <View style={{ position: "relative" }}>
       <GenericCards.ActivityCard
         containerStyle={containerStyle}
         activityItem={activityItem}
+        crawlData={crawlData}
         imageStyle={imageStyle}
         onPress={onPress}
       />

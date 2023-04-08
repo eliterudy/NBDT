@@ -3,7 +3,6 @@ import {
   Text,
   TouchableOpacity,
   Image,
-  Platform,
   StyleSheet,
   ViewStyle,
   ImageStyle,
@@ -11,8 +10,9 @@ import {
 } from "react-native";
 import React from "react";
 import { SIZES, COLORS, FONTS, icons } from "../../../constants";
-import { Rating, AirbnbRating } from "react-native-ratings";
-import { Food_Crawls, Restaurant } from "../../../config/types";
+import { AirbnbRating } from "react-native-ratings";
+import { FoodCrawler, Restaurant } from "../../../config/types";
+
 const ActivityCard = ({
   containerStyle,
   activityItem,
@@ -22,7 +22,7 @@ const ActivityCard = ({
   containerStyle?: ViewStyle;
   imageStyle?: ImageStyle;
   activityItem: Restaurant;
-  foodCrawl: Food_Crawls;
+  foodCrawl: FoodCrawler;
   onPress: (event: GestureResponderEvent) => void;
 }) => {
   return (
@@ -37,7 +37,7 @@ const ActivityCard = ({
     >
       <View style={styles.imageContainer}>
         <Image
-          source={activityItem.image_url}
+          source={{ uri: activityItem.poster_url }}
           resizeMode="cover"
           style={{
             width: 250,
