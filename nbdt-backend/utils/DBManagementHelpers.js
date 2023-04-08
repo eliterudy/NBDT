@@ -24,7 +24,6 @@ const deleteAssetFromDB = async (image_url) => {
   await Asset.findOne({
     image_url: image_url.toString(),
   }).then(async (asset) => {
-    console.log("HERE", asset, image_url);
     if (asset) {
       await AssetStorageHandler.deletePhoto(asset.file_id, asset.file_path);
       return await Asset.findByIdAndRemove(asset._id.toString());

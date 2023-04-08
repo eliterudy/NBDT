@@ -40,14 +40,10 @@ const uploadPhoto = (file, path, width = 1080, height = 1080) => {
 
 const deletePhoto = async (fileName, path) => {
   path = path.substring(1);
-  const image = bucket.file(`${path}/${fileName}`);
-
-  image
+  bucket
+    .file(`${path}/${fileName}`)
     .delete()
-    .then((resp) => {
-      console.log("RESP", resp);
-    })
-    .catch((e) => console.log("ERROR", e));
+    .then((resp) => {});
 };
 
 module.exports = { uploadPhoto, deletePhoto };
