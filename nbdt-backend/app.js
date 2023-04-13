@@ -3,14 +3,15 @@ var express = require("express");
 var path = require("path");
 var logger = require("morgan");
 var passport = require("passport");
-var config = require("./config/config");
+var Configs = require("./config/index");
 var mongoose = require("mongoose");
 var indexRouter = require("./routes/index");
 const { foodCrawlerRouter, restaurantRouter } = require("./routes/food/index");
 const userRouter = require("./routes/user/userRouter");
 const assetRouter = require("./routes/asset/assetRouter");
 
-var mongoUrl = config.DB_CONNECT;
+var mongoUrl = Configs.DB_CONNECT;
+
 var connect = mongoose.connect(mongoUrl, {
   // strictQuery: true,
   useUnifiedTopology: true,

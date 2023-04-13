@@ -9,7 +9,7 @@
     "start-test": "NODE_ENV=test nodemon start"
   },
   "dependencies": {
-    "@eliterudy/express-response-helper": "^0.0.3",
+    "@google-cloud/storage": "^6.9.5",
     "cors": "^2.8.5",
     "debug": "~2.6.9",
     "dotenv": "^16.0.2",

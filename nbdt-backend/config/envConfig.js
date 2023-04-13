@@ -2,8 +2,9 @@ const dotenv = require("dotenv");
 const { resolve } = require("path");
 
 if (process.env.NODE_ENV) {
+  const envKeys = resolve(__dirname, `../.env.${process.env.NODE_ENV}`);
   dotenv.config({
-    path: resolve(__dirname, `../.env.${process.env.NODE_ENV}`),
+    path: envKeys,
   });
 } else {
   dotenv.config();
@@ -19,4 +20,7 @@ module.exports = {
   IMAGEKIT_PUBLIC_KEY: process.env.IMAGEKIT_PUBLIC_KEY || 1234567890,
   IMAGEKIT_PRIVATE_KEY: process.env.IMAGEKIT_PRIVATE_KEY || 1234567890,
   IMAGEKIT_FOLDER: process.env.IMAGEKIT_FOLDER || 1234567890,
+  GOOGLE_STORAGE_URL: process.env.GOOGLE_STORAGE_URL || "",
+  GOOGLE_STORAGE_BUCKET: process.env.GOOGLE_STORAGE_BUCKET || "",
+  GOOGLE_PROJECT_ID: process.env.GOOGLE_PROJECT_ID || "",
 };

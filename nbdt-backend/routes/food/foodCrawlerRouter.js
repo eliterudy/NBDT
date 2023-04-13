@@ -2,7 +2,7 @@ var express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("../../config/cors");
 const FoodCrawler = require("../../models/food-models/foodCrawlers");
-const authenticate = require("../../config/authenticate");
+const authenticate = require("../../utils/authenticate");
 const { deleteAssetFromDB } = require("../../utils/DBManagementHelpers");
 const {
   response500,
@@ -10,7 +10,7 @@ const {
   response404,
   response403,
   response200,
-} = require("@eliterudy/express-response-helper");
+} = require("../../utils/ResponseHelper");
 
 var foodCrawlerRouter = express.Router();
 foodCrawlerRouter.use(bodyParser.json());

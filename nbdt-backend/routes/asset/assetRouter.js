@@ -1,20 +1,18 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const authenticate = require("../../config/authenticate");
+const authenticate = require("../../utils/authenticate");
 const AssetStorageHandler = require("../../utils/AssetStorageHandler");
 const Asset = require("../../models/asset-models/assets");
 const cors = require("../../config/cors");
-const {
-  deleteAssetFromDB,
-  createAssetInDB,
-} = require("../../utils/DBManagementHelpers");
+const { createAssetInDB } = require("../../utils/DBManagementHelpers");
 const {
   response500,
   response401,
   response404,
-  response403,
   response200,
 } = require("@eliterudy/express-response-helper");
+
+const Configs = require("../../config/index");
 // recursive adder function for new assets to the database.
 
 var assetRouter = express.Router();
@@ -57,8 +55,8 @@ assetRouter
   .post(
     cors.corsWithOptions,
     authenticate.verifyUser,
-    AssetStorageHandler.multerConfig().single("image"),
-    async (req, res, next) => {
+    Configs.multerConfig().single("image"),
+    async (req, res) => {
       if (!req.file) {
         return response401("Please provide an image", res);
       }
@@ -78,26 +76,34 @@ assetRouter
       }
     }
   )
-  .put(cors.corsWithOptions, (req, res, next) => {
+  .put(cors.corsWithOptions, (req, res) => {
     return response203("PUT", "/assets/", res);
   })
-  .patch(cors.corsWithOptions, (req, res, next) => {
+  .patch(cors.corsWithOptions, (req, res) => {
     return response203("PATCH", "/assets/", res);
   })
   .delete(
     authenticate.verifyUser,
     authenticate.verifyAdmin,
     (req, res, next) => {
-      if (!req.body.asset_id)
-        return response401("Please provide asset_id for this asset.", res);
+      if (!req.body.file_id)
+        return response401(
+          "Please provide both: the file_id for this asset.",
+          res
+        );
 
-      Asset.findById(req.body.asset_id.toString())
+      Asset.findOne({
+        file_id: req.body.file_id.toString(),
+      })
         .then(
           async (asset) => {
             if (!asset) {
               return response404("asset", res, null);
             } else {
-              await AssetStorageHandler.deletePhoto(asset.file_id);
+              await AssetStorageHandler.deletePhoto(
+                asset.file_id,
+                asset.file_path
+              );
               Asset.findByIdAndRemove(asset._id.toString())
                 .then((resp) => {
                   return response200(resp, res);

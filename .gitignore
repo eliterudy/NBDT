@@ -1,8 +1,5 @@
-assets
-android
-ios
-
-
+secrets
+gcp-storage-key.json
 node_modules
 .DS_Store
 .env
