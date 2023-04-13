@@ -10,7 +10,7 @@ const {
   response404,
   response403,
   response200,
-} = require("@eliterudy/express-response-helper");
+} = require("../../utils/ResponseHelper");
 
 var foodCrawlerRouter = express.Router();
 foodCrawlerRouter.use(bodyParser.json());

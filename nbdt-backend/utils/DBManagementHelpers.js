@@ -6,7 +6,7 @@ const {
   response404,
   response403,
   response200,
-} = require("@eliterudy/express-response-helper");
+} = require("./ResponseHelper");
 const createAssetInDB = async (asset_data) => {
   await Asset.create(asset_data)
     .then(async (asset) => {
