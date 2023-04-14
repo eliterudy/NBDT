@@ -2,14 +2,6 @@ var path = require("path");
 const { v4 } = require("uuid");
 const Configs = require("../config");
 
-// var ImageKit = require("imagekit");
-// var Configs = require("../config/index");
-// var imagekit = new ImageKit({
-//   publicKey: `${Configs.IMAGEKIT_PUBLIC_KEY}`,
-//   privateKey: `${Configs.IMAGEKIT_PRIVATE_KEY}`,
-//   urlEndpoint: `https://ik.imagekit.io/${Configs.IMAGEKIT_ID}/`,
-// });
-
 const { gcpStorage: gc } = require("../config/index");
 const bucket = gc.bucket(Configs.GOOGLE_STORAGE_BUCKET); // should be your bucket name
 

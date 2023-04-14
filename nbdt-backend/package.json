@@ -9,13 +9,13 @@
     "start-test": "NODE_ENV=test nodemon start"
   },
   "dependencies": {
+    "@eliterudy/express-response-helper": "^0.0.4",
     "@google-cloud/storage": "^6.9.5",
     "cors": "^2.8.5",
     "debug": "~2.6.9",
     "dotenv": "^16.0.2",
     "express": "~4.16.1",
     "http-errors": "~1.6.3",
-    "imagekit": "^4.1.1",
     "jade": "~1.11.0",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^6.10.0",

@@ -14,8 +14,14 @@ var mongoUrl = Configs.DB_CONNECT;
 
 var connect = mongoose.connect(mongoUrl, {
   // strictQuery: true,
-  useUnifiedTopology: true,
   useNewUrlParser: true,
+  useUnifiedTopology: true,
+  writeConcern: {
+    retryWrites: true,
+    w: "majority",
+    j: true,
+    wtimeout: 1000,
+  },
   autoIndex: true, //make this also true
 });
 
