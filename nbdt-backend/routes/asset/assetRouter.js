@@ -10,7 +10,7 @@ const {
   response401,
   response404,
   response200,
-} = require("../../utils/ResponseHelper");
+} = require("@eliterudy/express-response-helper");
 
 const Configs = require("../../config/index");
 // recursive adder function for new assets to the database.

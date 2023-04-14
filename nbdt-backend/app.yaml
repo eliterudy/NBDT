@@ -1,8 +1,20 @@
 runtime: nodejs14
-env: standard
-instance_class: F1
-automatic_scaling: 
-  min_idle_instances: 1
-  max_idle_instances: automatic
-  min_pending_latency: automatic
-  max_pending_latency: automatic
+instance_class: F2
+
+env_variables:
+  APP_NAME: "nbdt"
+  ENV_KEY : "production"
+  DB_CONNECT:  "mongodb+srv://admin:123456789umd@nbdt-ver-0-staging.28xtya4.mongodb.net/nbdt"
+  JWT_SECRET : "eyJhbGciOiJIUzUxMiJ9.eyJSb2xlIjoiQWRtaW4iLCJJc3N1ZXIiOiJHYXZpbiIsIlVzZXJuYW1lIjoiYWRtaW4iLCJleHAiOjE3NDA4NzIwODksImlhdCI6MTY3NzcxMzcwNH0.hIwLC1WmYvLebS9nRBl1Ta5U0JxSse9inDmKtvVFIZfhcyWGOw2KlP405piVKOHdS4-kfjokUcv-jCeyUgFRFA"
+  GOOGLE_STORAGE_URL : "https://storage.googleapis.com"
+  GOOGLE_STORAGE_BUCKET : "nbdt-staging"
+  GOOGLE_PROJECT_ID : "nbdt-ver-0"
+
+handlers:
+- url: /stylesheets
+  static_dir: stylesheets
+
+- url: /.*
+  secure: always
+  redirect_http_response_code: 301
+  script: auto
