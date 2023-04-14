@@ -4,7 +4,7 @@ instance_class: F2
 env_variables:
   APP_NAME: "nbdt"
   ENV_KEY : "production"
-  DB_CONNECT:  "mongodb+srv://admin:123456789umd@nbdt-ver-0-staging.28xtya4.mongodb.net/nbdt"
+  DB_CONNECT:  "mongodb+srv://admin:123456789umd@nbdt-staging.oumf6ak.mongodb.net/nbdt"
   JWT_SECRET : "eyJhbGciOiJIUzUxMiJ9.eyJSb2xlIjoiQWRtaW4iLCJJc3N1ZXIiOiJHYXZpbiIsIlVzZXJuYW1lIjoiYWRtaW4iLCJleHAiOjE3NDA4NzIwODksImlhdCI6MTY3NzcxMzcwNH0.hIwLC1WmYvLebS9nRBl1Ta5U0JxSse9inDmKtvVFIZfhcyWGOw2KlP405piVKOHdS4-kfjokUcv-jCeyUgFRFA"
   GOOGLE_STORAGE_URL : "https://storage.googleapis.com"
   GOOGLE_STORAGE_BUCKET : "nbdt-staging"
